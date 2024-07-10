@@ -1,0 +1,68 @@
+version: '3'
+
+services:
+  frontend:
+    container_name: frontend
+    restart: always
+    env_file:
+      - ../../Frontend/jett/.env
+    build: 
+      context: ../../Frontend/jett/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    networks:
+      - team_network
+    
+  database:
+    container_name: mysql_db
+    image: mysql:latest
+    restart: always
+    ports:
+      - "3307:3307"
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/initdb.d:/docker-entrypoint-initdb.d
+    command: 
+      - "mysql" 
+      - "--character_set_server=utf8mb4"
+      - "--collation_server=utf8mb4_unicode_ci"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: your_root_password
+    networks:
+      - team_network
+  
+  redis:
+    container_name: jett-redis
+    image: redis
+    restart: always
+    ports:
+      - "6378:6378"
+    networks:
+      - team_network
+  
+  application:
+    container_name: backend
+    restart: always
+    build: 
+      context: ./
+      dockerfile: Dockerfile 
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3307/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6378
+    depends_on:
+      - database
+      - redis
+    networks:
+      - team_network
+  
+networks:
+  team_network:
