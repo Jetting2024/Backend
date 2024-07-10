@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   frontend:
@@ -21,17 +21,11 @@ services:
     ports:
       - "3307:3307"
     volumes:
-      - ./mysql/conf.d:/etc/mysql/conf.d
+      - ./mysql/conf.d:/etc/mysql/conf.d/my.cnf 
       - ./mysql/initdb.d:/docker-entrypoint-initdb.d
-    command: 
-      - "mysql" 
-      - "--character_set_server=utf8mb4"
-      - "--collation_server=utf8mb4_unicode_ci"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${SPRING_DATASOURCE_USERNAME}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - team_network
   
