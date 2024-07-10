@@ -10,7 +10,7 @@ services:
       context: ../../Frontend/jett/
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "5173:3000"
     networks:
       - team_network
     
