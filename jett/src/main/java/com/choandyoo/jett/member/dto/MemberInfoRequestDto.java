@@ -11,11 +11,13 @@ import lombok.Getter;
 @Getter
 @Data
 public class MemberInfoRequestDto {
+    private String name;
     private String email;
     private String password;
 
     public Member toSaveMember() {
         return Member.builder()
+            .name(this.name)
             .email(this.email)
             .password(this.password)
             .createdDate(LocalDateTime.now())
