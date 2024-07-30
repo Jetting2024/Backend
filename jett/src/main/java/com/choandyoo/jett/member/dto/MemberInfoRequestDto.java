@@ -25,4 +25,8 @@ public class MemberInfoRequestDto {
             .role(Role.ROLE_USER)
             .build();
     }
+
+    public void encodePassword(String encodingPassword) {
+        this.password = encodingPassword;
+    }
 }

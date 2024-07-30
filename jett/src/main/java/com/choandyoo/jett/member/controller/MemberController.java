@@ -1,5 +1,6 @@
 package com.choandyoo.jett.member.controller;
 
+import com.choandyoo.jett.member.dto.TokenResponseDto;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,9 +30,9 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Long>> login(@RequestBody LoginRequestDto loginRequestDto) {
-        long memberId = memberService.login(loginRequestDto);
+    public ResponseEntity<ApiResponse<TokenResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto) {
+        TokenResponseDto tokenResponseDto = memberService.login(loginRequestDto);
         memberService.updateLastLoginDate(loginRequestDto.getEmail());
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.onSuccess(memberId));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.onSuccess(tokenResponseDto));
     }    
 }
