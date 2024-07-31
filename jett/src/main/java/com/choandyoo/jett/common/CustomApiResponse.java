@@ -8,16 +8,16 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @JsonPropertyOrder({"isSuccess", "message", "result"})
-public class ApiResponse<T> {
+public class CustomApiResponse<T> {
     private final boolean isSuccess;
     private final String message;
     private final T result;
 
-    public static <T> ApiResponse<T> onSuccess(T result) {
-        return new ApiResponse<> (true, "", result);
+    public static <T> CustomApiResponse<T> onSuccess(T result) {
+        return new CustomApiResponse<> (true, "", result);
     }
 
-    public static <T> ApiResponse<T> onFailure(String message) {
-        return new ApiResponse<> (false, message, null);
+    public static <T> CustomApiResponse<T> onFailure(String message) {
+        return new CustomApiResponse<> (false, message, null);
     }
 }
