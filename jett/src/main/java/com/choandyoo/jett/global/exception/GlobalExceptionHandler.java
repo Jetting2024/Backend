@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.choandyoo.jett.member.exception.DuplicateEmailException;
+import com.choandyoo.jett.member.exception.NoUserException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,10 +21,17 @@ public class GlobalExceptionHandler {
         log.error("DuplicateEmailException 발생, 메시지: {}", ex.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse(
-            501, // 또는 적절한 에러 코드
-            ex.getMessage()
-        );
+                501, // 또는 적절한 에러 코드
+                ex.getMessage());
 
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    /* NoUserException */
+    @ExceptionHandler(NoUserException.class)
+    public ResponseEntity<ErrorResponse> handleNoUserException(NoUserException ex) {
+        log.error("NoUserException 발생, 메시지: {}", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(501, ex.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
