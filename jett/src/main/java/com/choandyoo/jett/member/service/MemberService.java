@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.choandyoo.jett.member.dto.LoginRequestDto;
 import com.choandyoo.jett.member.dto.MemberInfoRequestDto;
 import com.choandyoo.jett.member.entity.Member;
+import com.choandyoo.jett.member.exception.DuplicateEmailException;
 import com.choandyoo.jett.member.repository.MemberRepository;
 
 import jakarta.transaction.Transactional;
@@ -27,23 +28,27 @@ public class MemberService {
 
     @Transactional
     public Long signUp(MemberInfoRequestDto memberInfoRequestDto) {
-        boolean isDuplicate = memberRepository.findMemberByEmail(memberInfoRequestDto.getEmail()).isPresent();
-        if(isDuplicate) {
-            throw new RuntimeException("Duplicate Email");
-        }
-        memberInfoRequestDto.encodePassword(passwordEncoder.encode(memberInfoRequestDto.getPassword()));
-        Member savedMember = memberRepository.save(memberInfoRequestDto.toSaveMember());
-        return savedMember.getId();
+    boolean isDuplicate =
+    memberRepository.findMemberByEmail(memberInfoRequestDto.getEmail()).isPresent();
+    if (isDuplicate) {
+    throw new DuplicateEmailException("Duplicate Email");
+    }
+    memberInfoRequestDto.encodePassword(passwordEncoder.encode(memberInfoRequestDto.getPassword()));
+    Member savedMember =
+    memberRepository.save(memberInfoRequestDto.toSaveMember());
+    return savedMember.getId();
     }
 
     @Transactional
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                loginRequestDto.getEmail(), loginRequestDto.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
-        Member member = memberRepository.findMemberByEmail(loginRequestDto.getEmail()).orElseThrow(() -> new RuntimeException("no user"));
+        Member member = memberRepository.findMemberByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("no user"));
         return new TokenResponseDto(member.getId(), jwtToken);
     }
 

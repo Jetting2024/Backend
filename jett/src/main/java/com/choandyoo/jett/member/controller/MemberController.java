@@ -1,23 +1,19 @@
 package com.choandyoo.jett.member.controller;
 
 import com.choandyoo.jett.member.dto.TokenResponseDto;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.choandyoo.jett.common.CustomApiResponse;
 import com.choandyoo.jett.member.dto.LoginRequestDto;
 import com.choandyoo.jett.member.dto.MemberInfoRequestDto;
 import com.choandyoo.jett.member.service.MemberService;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Member", description = "회원 관련 API")
 @RequestMapping("/member")
@@ -39,5 +35,5 @@ public class MemberController {
         TokenResponseDto tokenResponseDto = memberService.login(loginRequestDto);
         memberService.updateLastLoginDate(loginRequestDto.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(tokenResponseDto));
-    }    
+    }
 }
