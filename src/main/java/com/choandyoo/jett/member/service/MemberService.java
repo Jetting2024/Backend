@@ -3,7 +3,10 @@ package com.choandyoo.jett.member.service;
 import com.choandyoo.jett.config.KakaoOAuth2Config;
 import com.choandyoo.jett.jwt.JwtToken;
 import com.choandyoo.jett.jwt.JwtTokenProvider;
-import com.choandyoo.jett.member.dto.TokenResponseDto;
+import com.choandyoo.jett.member.dto.*;
+import com.choandyoo.jett.member.enums.Role;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,8 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.choandyoo.jett.member.dto.LoginRequestDto;
-import com.choandyoo.jett.member.dto.MemberInfoRequestDto;
 import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.member.exception.DuplicateEmailException;
 import com.choandyoo.jett.member.repository.MemberRepository;
@@ -26,6 +27,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -76,7 +83,7 @@ public class MemberService {
     }
 
     @Transactional
-    public String getKakaoAccessToken(String code) {
+    public TokenResponseDto getKakaoToken(String code) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -97,21 +104,83 @@ public class MemberService {
         );
 
         Map<String, String> responseBody = (Map<String, String>) response.getBody();
-
+        System.out.println("response = "+responseBody);
+        String grantType = responseBody.get("token_type");
         String accessToken = responseBody.get("access_token");
+        String refreshToken = responseBody.get("refresh_token");
+        long idx = loginKakaoMember(accessToken);
 
-        getKakaoUser(accessToken);
-        return "kakao login success";
-    }
-
-    @Transactional
-    public void getKakaoUser(String accessToken) {
-        //Kakao 유저 가져오기
+        JwtToken jwtToken = JwtToken.builder()
+                .grantType(grantType)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        return new TokenResponseDto(idx, jwtToken);
     }
 
     @Transactional
     public void updateLastLoginDate(String email) {
         Member member = memberRepository.findMemberByEmail(email).orElseThrow(() -> new RuntimeException("no user"));
         member.updateLastLoginDate();
+    }
+
+    @Transactional
+    public long loginKakaoMember(String accessToken) {
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+        String id = "";
+        String name = "";
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            //요청에 필요한 Header에 포함될 내용
+            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+
+            int responseCode = connection.getResponseCode();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line = "";
+            String result = "";
+            while((line = reader.readLine()) != null) {
+                result += line;
+            }
+
+            JsonObject object = (JsonObject) JsonParser.parseString(result);
+            JsonObject properties = (JsonObject) object.getAsJsonObject().get("properties");
+
+            name = properties.get("nickname").getAsString();
+            //email을 카카오에서 받아올 수 없으니 일단 ID로 테스트용
+            id = object.get("id").getAsString();
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        boolean isDuplicate = memberRepository.findMemberByEmail(id).isPresent();
+        if(!isDuplicate) {
+            Member savedMember = Member.builder()
+                    .name(name)
+                    .email(id)
+                    .password("1111")  //비밀번호 1111로 테스트용
+                    .createdDate(LocalDateTime.now())
+                    .lastLoginDate(LocalDateTime.now())
+                    .role(Role.ROLE_USER)
+                    .build();
+            memberRepository.save(savedMember);
+        } else {
+            updateLastLoginDate(id);
+        }
+        Member member = memberRepository.findMemberByEmail(id).orElseThrow(() -> new RuntimeException("no user"));
+        return member.getId();
+    }
+
+    @Transactional
+    public MemberDto getMember(Long idx) {
+        Member member = memberRepository.findById(idx).orElseThrow(() -> new RuntimeException("no user"));
+        return MemberDto.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .name(member.getName())
+                .build();
     }
 }
