@@ -1,9 +1,7 @@
 package com.choandyoo.jett.member.controller;
 
-import com.choandyoo.jett.member.dto.TokenResponseDto;
+import com.choandyoo.jett.member.dto.*;
 import com.choandyoo.jett.common.CustomApiResponse;
-import com.choandyoo.jett.member.dto.LoginRequestDto;
-import com.choandyoo.jett.member.dto.MemberInfoRequestDto;
 import com.choandyoo.jett.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,17 +32,24 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(tokenResponseDto));
     }
 
+    @Operation(summary = "카카오 로그인", description = "카카오 로그인을 처리합니다.")
     @GetMapping("/kakao")
     public RedirectView kakaoConnect() {
         String url = memberService.kakaoConnect();
-        System.out.println(url);
         return new RedirectView(url);
     }
 
     @GetMapping("/kakao/callback")
-    public String kakaoLogin(@RequestParam("code") String code) {
-        String s = memberService.getKakaoAccessToken(code);
-        return s;
+    public ResponseEntity<CustomApiResponse<TokenResponseDto>> kakaoLogin(@RequestParam("code") String code) {
+        TokenResponseDto tokenResponseDto = memberService.getKakaoToken(code);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(tokenResponseDto));
+    }
+
+    @Operation(summary = "사용자 정보 가져오기", description = "사용자 정보를 가져옵니다.")
+    @GetMapping("/info/{idx}")
+    public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@PathVariable("idx")Long idx) {
+        MemberDto memberDto = memberService.getMember(idx);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
     }
 
 }
