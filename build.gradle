@@ -35,6 +35,9 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	//Webflux
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	// Google API Client
+	implementation 'com.google.maps:google-maps-services:0.18.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
