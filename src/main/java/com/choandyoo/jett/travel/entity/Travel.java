@@ -1,29 +1,31 @@
 package com.choandyoo.jett.travel.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Getter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Getter
 public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long travelId;
-    @Column
-    private LocalDateTime travelDateTime;
-    @Column
-    private String road_address_name;
-    @Column
-    private String category_group_code;
-    @Column
-    private String phone;
-    @Column
-    private String place_name;
+    private Long travelId;
 
+    @Column
+    private String travelName;
+
+    @Column
+    private LocalDateTime createdAt;
+
+    @Column
+    private LocalDateTime updatedAt;
 
 }
