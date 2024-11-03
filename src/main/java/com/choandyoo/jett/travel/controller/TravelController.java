@@ -1,6 +1,7 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
+import com.choandyoo.jett.travel.dto.ScheduleResponse;
 import com.choandyoo.jett.travel.dto.TravelResponse;
 import com.choandyoo.jett.travel.service.KakaoService;
 import com.choandyoo.jett.travel.service.TravelService;
@@ -9,10 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +34,20 @@ public class TravelController {
         List<TravelResponse> checktravelResult = travelService.getAllTravel();
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checktravelResult));
     }
+    @Operation(summary = "일정 조회", description = "선택 여행 일정 조회")
+    @GetMapping("/lists/{travelId}")
+    public ResponseEntity<CustomApiResponse<List<ScheduleResponse>>> getScheduleByTravelId(@PathVariable Long travelId) {
+        List<ScheduleResponse> scheduleResponses = travelService.getAllSchedule(travelId);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(scheduleResponses));
+    }
+    @Operation(summary = "일정 삭제", description = "선택 여행 삭제")
+    @DeleteMapping("/lists/{scheduleId}")
+    public ResponseEntity<CustomApiResponse<String>> deleteSchedule(@PathVariable Long scheduleId) {
+        travelService.deleteSchedule(scheduleId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
+    }
+
+
 
 
 }
