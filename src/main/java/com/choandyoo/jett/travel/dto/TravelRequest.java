@@ -24,6 +24,7 @@ public class TravelRequest {
                 .travelName(travelName)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .isDeleted(false)
                 .build();
     }
 

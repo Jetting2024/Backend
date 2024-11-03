@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +17,9 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Getter
+@SQLDelete(sql = "UPDATE travel SET deleted = true WHERE travelId = ?")
+@Where(clause = "deleted = false")
+@Table(name = "travel")
 public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +34,6 @@ public class Travel {
     @Column
     private LocalDateTime updatedAt;
 
+    @Column(name = "deleted", nullable = false)
+    private Boolean isDeleted = false;
 }
