@@ -1,4 +1,4 @@
-package com.choandyoo.jett.travel.dto;
+package com.choandyoo.jett.schedule.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class ScheduleResponse {
 
     private Long scheduleId;
-    private LocalDateTime Date;
+    private LocalDateTime date;
     private String placeName;
     private String placeLocation;
     private String placeUrl;

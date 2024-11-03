@@ -1,5 +1,6 @@
-package com.choandyoo.jett.travel.entity;
+package com.choandyoo.jett.schedule.entity;
 
+import com.choandyoo.jett.travel.entity.Travel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class Schedule {
     private Travel travel; // 특정 여행에 속한 스케줄임을 나타냄
 
     @Column
-    private LocalDateTime Date;
+    private LocalDateTime date;
 
     @Column
     private String placeName;

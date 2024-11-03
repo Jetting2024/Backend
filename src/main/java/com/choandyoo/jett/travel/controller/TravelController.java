@@ -1,7 +1,7 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
-import com.choandyoo.jett.travel.dto.ScheduleResponse;
+import com.choandyoo.jett.travel.dto.TravelRequest;
 import com.choandyoo.jett.travel.dto.TravelResponse;
 import com.choandyoo.jett.travel.service.KakaoService;
 import com.choandyoo.jett.travel.service.TravelService;
@@ -28,27 +28,26 @@ public class TravelController {
         String searchResult = kakaoService.searchKeyword(query, page);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(searchResult));
     }
-    @Operation(summary = "일정 조회", description = "전체 모든 여행 일정조회")
+    @Operation(summary = "여행 생성",description = " 여행 생성하기")
+    @PostMapping()
+    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest) {
+        travelService.addTravel(travelRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("여행 생성됌"));
+    }
+
+    @Operation(summary = "여행 조회", description = "전체 모든 여행 일정조회")
     @GetMapping("/lists")
     public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule() {
         List<TravelResponse> checktravelResult = travelService.getAllTravel();
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checktravelResult));
     }
-    @Operation(summary = "일정 조회", description = "선택 여행 일정 조회")
-    @GetMapping("/lists/{travelId}")
-    public ResponseEntity<CustomApiResponse<List<ScheduleResponse>>> getScheduleByTravelId(@PathVariable Long travelId) {
-        List<ScheduleResponse> scheduleResponses = travelService.getAllSchedule(travelId);
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(scheduleResponses));
-    }
-    @Operation(summary = "일정 삭제", description = "선택 여행 삭제")
-    @DeleteMapping("/lists/{scheduleId}")
-    public ResponseEntity<CustomApiResponse<String>> deleteSchedule(@PathVariable Long scheduleId) {
-        travelService.deleteSchedule(scheduleId);
+    @Operation(summary = "여행 삭제",description = "여행 삭제")
+    @DeleteMapping("/{travelId}")
+    public ResponseEntity<CustomApiResponse<String>> deleteTravel(@PathVariable Long travelId) {
+        travelService.deleteTravel(travelId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
+
     }
-
-
-
 
 }
 
