@@ -21,5 +21,6 @@ public class ScheduleResponse {
     private String placeLocation;
     private String placeUrl;
     private String contactNumber;
+    private String image;
 
 }

@@ -21,6 +21,7 @@ public class ScheduleRequest {
     private String placeName;
     private String placeUrl;
     private LocalDateTime date;
+    private String image;
 
     public Schedule toSaveSchedule(Travel travel, ScheduleRequest scheduleRequest) {
         return Schedule.builder()
@@ -30,6 +31,7 @@ public class ScheduleRequest {
                 .placeName(scheduleRequest.getPlaceName())
                 .placeLocation(scheduleRequest.getPlaceLocation())
                 .placeUrl(scheduleRequest.getPlaceUrl())
+                .image(scheduleRequest.getImage())
                 .build();
     }
 }

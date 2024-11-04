@@ -38,4 +38,7 @@ public class Schedule {
     @Column
     private String contactNumber;
 
+    @Column
+    private String image;
+
 }

@@ -37,6 +37,7 @@ public class ScheduleService {
                         .placeLocation(schedule.getPlaceLocation())
                         .placeUrl(schedule.getPlaceUrl())
                         .contactNumber(schedule.getContactNumber())
+                        .image(schedule.getImage())
                         .build())
                 .collect(Collectors.toList());
     }
