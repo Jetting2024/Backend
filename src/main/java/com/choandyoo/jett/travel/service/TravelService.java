@@ -32,7 +32,8 @@ public class TravelService {
 
     @Transactional
     public void addTravel(TravelRequest travelRequest) {
-        Travel travel = travelRequest.toSaveTravel(travelRequest.getTravelName());
+        // travelRequest 객체에서 toSaveTravel을 호출하여 Travel 객체 생성
+        Travel travel = travelRequest.toSaveTravel();
         travelRepository.save(travel);
     }
     @Transactional

@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -27,6 +28,12 @@ public class Travel {
 
     @Column
     private String travelName;
+
+    @Column
+    private LocalDate startDate;
+
+    @Column
+    private LocalDate endDate;
 
     @Column
     private LocalDateTime createdAt;
