@@ -37,6 +37,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// Google API Client
 	implementation 'com.google.maps:google-maps-services:0.18.0'
+	// WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
