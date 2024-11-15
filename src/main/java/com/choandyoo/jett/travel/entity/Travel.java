@@ -1,5 +1,6 @@
 package com.choandyoo.jett.travel.entity;
 
+import com.choandyoo.jett.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @NoArgsConstructor
@@ -43,4 +45,7 @@ public class Travel {
 
     @Column(name = "deleted", nullable = false)
     private Boolean isDeleted = false;
+
+    @OneToMany(mappedBy = "travel")
+    private List<TravelMember> travelMembers;
 }

@@ -1,6 +1,7 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
+import com.choandyoo.jett.config.CustomUserDetails;
 import com.choandyoo.jett.travel.dto.TravelRequest;
 import com.choandyoo.jett.travel.dto.TravelResponse;
 import com.choandyoo.jett.travel.service.KakaoService;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,11 +37,12 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("여행 생성됌"));
     }
 
-    @Operation(summary = "여행 조회", description = "전체 모든 여행 일정조회")
+    @Operation(summary = "여행 조회", description = "그 유저에 대한 전체 모든 여행 일정조회")
     @GetMapping("/lists")
-    public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule() {
-        List<TravelResponse> checktravelResult = travelService.getAllTravel();
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checktravelResult));
+    public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getId();
+        List<TravelResponse> checkTravelResult = travelService.getAllTravelByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checkTravelResult));
     }
     @Operation(summary = "소프트 딜리트 여행 삭제",description = "여행 삭제")
     @DeleteMapping("/Hard/{travelId}")
@@ -48,6 +51,14 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
 
     }
+    @Operation(summary = "여행 조회", description = "특정 유저에 대한 여행 일정 조회")
+    @GetMapping("/test/{userId}")
+    public ResponseEntity<List<TravelResponse>> getTravelByUserId(@PathVariable Long userId) {
+        // userId에 해당하는 여행 데이터를 조회
+        List<TravelResponse> travelList = travelService.Test_getAllTravelByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(travelList);
+    }
+
 
 
 }

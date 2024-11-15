@@ -9,6 +9,6 @@ import java.util.Optional;
 
 
 public interface TravelRepository extends JpaRepository<Travel, Long> {
-    List<Travel> findAll();
+    List<Travel> findByTravelMembers_Member_Id(Long memberId);
 
 }

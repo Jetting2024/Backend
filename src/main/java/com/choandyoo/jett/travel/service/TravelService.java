@@ -7,7 +7,6 @@ import com.choandyoo.jett.travel.repository.TravelRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +18,29 @@ import java.util.stream.Collectors;
 public class TravelService {
     private final TravelRepository travelRepository;
 
-    public List<TravelResponse> getAllTravel() {
-        // 모든 Travel 엔티티를 가져와 각 엔티티를 TravelResponse로 변환하여 리스트 반환
-        return travelRepository.findAll().stream()
+    public List<TravelResponse> Test_getAllTravelByUserId(Long userId) {
+        // 특정 사용자가 참여한 여행을 조회하고, TravelResponse로 변환
+        return travelRepository.findByTravelMembers_Member_Id(userId).stream()
                 .map(travel -> TravelResponse.builder()
                         .travelId(travel.getTravelId())
                         .travelName(travel.getTravelName())
                         .createdAt(travel.getCreatedAt())
+                        .participants(travel.getTravelMembers().stream()
+                                .map(travelMember -> travelMember.getMember().getName())  // TravelMember를 통해 참여자 이름 추출
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+    public List<TravelResponse> getAllTravelByUserId(Long userId) {
+        // 특정 사용자가 참여한 여행을 조회하고, TravelResponse로 변환
+        return travelRepository.findByTravelMembers_Member_Id(userId).stream()
+                .map(travel -> TravelResponse.builder()
+                        .travelId(travel.getTravelId())
+                        .travelName(travel.getTravelName())
+                        .createdAt(travel.getCreatedAt())
+                        .participants(travel.getTravelMembers().stream()
+                                .map(travelMember -> travelMember.getMember().getName())  // TravelMember를 통해 참여자 이름 추출
+                                .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
     }
