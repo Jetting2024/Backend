@@ -51,10 +51,10 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
 
     }
-    @Operation(summary = "여행 조회", description = "특정 유저에 대한 여행 일정 조회")
+    //여행조회 테스트 하기
+    @Operation(summary = "여행 조회", description = "특정 유저에 대한 여행 일정 조회(jwt 사용안한테스트)")
     @GetMapping("/test/{userId}")
     public ResponseEntity<List<TravelResponse>> getTravelByUserId(@PathVariable Long userId) {
-        // userId에 해당하는 여행 데이터를 조회
         List<TravelResponse> travelList = travelService.Test_getAllTravelByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(travelList);
     }
