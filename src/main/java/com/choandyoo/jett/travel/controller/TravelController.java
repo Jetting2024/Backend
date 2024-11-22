@@ -2,8 +2,9 @@ package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
 import com.choandyoo.jett.config.CustomUserDetails;
-import com.choandyoo.jett.travel.dto.TravelRequest;
-import com.choandyoo.jett.travel.dto.TravelResponse;
+import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
+import com.choandyoo.jett.travel.dto.request.TravelRequest;
+import com.choandyoo.jett.travel.dto.response.TravelResponse;
 import com.choandyoo.jett.travel.service.KakaoService;
 import com.choandyoo.jett.travel.service.TravelService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,12 +52,12 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
 
     }
-    //여행조회 테스트 하기
-    @Operation(summary = "여행 조회", description = "특정 유저에 대한 여행 일정 조회(jwt 사용안한테스트)")
-    @GetMapping("/test/{userId}")
-    public ResponseEntity<List<TravelResponse>> getTravelByUserId(@PathVariable Long userId) {
-        List<TravelResponse> travelList = travelService.Test_getAllTravelByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(travelList);
+    @Operation(summary = "친구 초대", description = "여행에 친구들을 초대합니다.")
+    @PostMapping("/invite/({travelId}")
+    public ResponseEntity<CustomApiResponse<String>> inviteFriends(@AuthenticationPrincipal CustomUserDetails customUserDetails,@RequestBody TravelInviteRequest travelInviteRequest,@PathVariable Long travelId) {
+        Long userId = customUserDetails.getId();
+        travelService.inviteFriendsToTravel(userId, travelId, travelInviteRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("친구들이 초대되었습니다."));
     }
 
 

@@ -1,4 +1,4 @@
-package com.choandyoo.jett.travel.dto;
+package com.choandyoo.jett.travel.dto.response;
 
 import lombok.*;
 

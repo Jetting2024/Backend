@@ -8,4 +8,5 @@ import com.choandyoo.jett.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findMemberByEmail(String email);
+
 }

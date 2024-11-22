@@ -52,4 +52,6 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
     }
 
+
+
 }
