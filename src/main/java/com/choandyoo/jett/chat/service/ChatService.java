@@ -2,6 +2,7 @@ package com.choandyoo.jett.chat.service;
 
 import com.choandyoo.jett.chat.dto.ChatMessageDto;
 import com.choandyoo.jett.chat.dto.ChatRoomDto;
+import com.choandyoo.jett.chat.dto.ChatRoomInfoDto;
 import com.choandyoo.jett.chat.entity.ChatMessage;
 import com.choandyoo.jett.chat.entity.ChatRoom;
 import com.choandyoo.jett.chat.repository.ChatMessageRepository;
@@ -30,19 +31,20 @@ public class ChatService {
     }
 
     @Transactional
-    public <T> void sendMessage(WebSocketSession session, T message) {
-        try {
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Transactional
     public void saveMessage(ChatMessageDto chatMessageDto) {
         ChatMessage savedChatMessage = chatMessageDto.toSaveChatMessage();
         chatMessageRepository.save(savedChatMessage);
     }
 
+    @Transactional
+    public ChatRoomInfoDto getChatroom(Long chatroomId) {
+        ChatRoom chatRoom = chatRepository.findById(chatroomId).orElseThrow(() -> new RuntimeException("no chatRoom"));
+        ChatRoomInfoDto chatRoomInfoDto = ChatRoomInfoDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .userId(chatRoom.getUserId())
+                .member(chatRoom.getMember())
+                .roomName(chatRoom.getRoomName())
+                .build();
+        return chatRoomInfoDto;
+    }
 }
