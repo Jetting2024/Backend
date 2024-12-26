@@ -51,9 +51,9 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checkTravelResult));
     }
     @Operation(summary = "소프트 딜리트 여행 삭제",description = "여행 삭제")
-    @DeleteMapping("/Hard/{travelId}")
-    public ResponseEntity<CustomApiResponse<String>> deleteTravel(@PathVariable Long travelId) {
-        travelService.deleteTravel(travelId);
+    @DeleteMapping("/Hard/{userId}/{travelId}")
+    public ResponseEntity<CustomApiResponse<String>> deleteTravel(@PathVariable Long userId,@PathVariable Long travelId) {
+        travelService.deleteTravel(userId,travelId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
 
     }

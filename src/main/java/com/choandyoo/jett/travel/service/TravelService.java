@@ -55,9 +55,14 @@ public class TravelService {
 
     }
     @Transactional
-    public void deleteTravel(Long  travelId) {
+    public void deleteTravel(Long userId ,Long  travelId) {
         if (!travelRepository.existsById(travelId)) {
             throw new EntityNotFoundException("Travel not found with id: " + travelId);
+        }
+        TravelMember travelMember=travelMemberRepository.findByMember_IdAndTravel_TravelId(userId, travelId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없거나 그 유저에 대한 트래블 아이디가 틀립니다."));
+        if (travelMember.getRole() != Role.ROLE_ADMIN) {
+            throw new IllegalArgumentException("이 유저는 해당 여행에 대한 권한이 없습니다(여행 생성자만 추가,수정,삭제 가능.");
         }
         travelRepository.deleteById(travelId);
     }
