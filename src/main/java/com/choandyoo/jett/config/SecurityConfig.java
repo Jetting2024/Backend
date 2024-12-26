@@ -24,8 +24,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp"};
-    private final String[] AUTHENTICATED_URL = {"/member/**"};
+    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp", "/**", "/member/**","/travel/**"};
+    private final String[] AUTHENTICATED_URL = {"/member/**","/travel/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

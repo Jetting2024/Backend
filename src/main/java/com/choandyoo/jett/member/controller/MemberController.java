@@ -1,5 +1,6 @@
 package com.choandyoo.jett.member.controller;
 
+import com.choandyoo.jett.config.CustomUserDetails;
 import com.choandyoo.jett.member.dto.*;
 import com.choandyoo.jett.common.CustomApiResponse;
 import com.choandyoo.jett.member.service.MemberService;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -55,6 +57,13 @@ public class MemberController {
     @GetMapping("/info/{idx}")
     public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@PathVariable("idx")Long idx) {
         MemberDto memberDto = memberService.getMember(idx);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
+    }
+    @Operation(summary = "사용자 정보 가져오기", description = "사용자 정보를 가져옵니다.")
+    @GetMapping("/testInfo")
+    public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId=customUserDetails.getId();
+        MemberDto memberDto = memberService.getMember(userId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
     }
 
