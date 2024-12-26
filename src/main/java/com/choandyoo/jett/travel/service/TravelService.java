@@ -9,6 +9,7 @@ import com.choandyoo.jett.travel.entity.Travel;
 import com.choandyoo.jett.travel.entity.TravelMember;
 import com.choandyoo.jett.travel.repository.TravelMemberRepository;
 import com.choandyoo.jett.travel.repository.TravelRepository;
+import com.choandyoo.jett.travel.enums.Role;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,7 @@ public class TravelService {
         TravelMember travelMember = TravelMember.builder()
                 .travel(travel)
                 .member(user)
+                .role(Role.ROLE_ADMIN)
                 .build();
         travelMemberRepository.save(travelMember);
 
@@ -67,8 +69,9 @@ public class TravelService {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 사용자가 없습니다."));
         TravelMember travelMember = TravelMember.builder()
-                .member(member)  // 초대된 사용자
-                .travel(travel)  // 해당 여행
+                .member(member)
+                .travel(travel)
+                .role(Role.ROLE_USER)
                 .build();
         travelMemberRepository.save(travelMember);
 

@@ -1,7 +1,6 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
-import com.choandyoo.jett.config.CustomUserDetails;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
 import com.choandyoo.jett.travel.dto.request.TravelRequest;
 import com.choandyoo.jett.travel.dto.response.TravelResponse;
@@ -13,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,9 +32,8 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(searchResult));
     }
     @Operation(summary = "여행 생성",description = " 여행 생성하기")
-    @PostMapping()
-    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId=customUserDetails.getId();
+    @PostMapping("/{userId}")
+    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest, @PathVariable Long userId) {
         travelService.addTravel(userId,travelRequest);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("여행 생성됌"));
     }

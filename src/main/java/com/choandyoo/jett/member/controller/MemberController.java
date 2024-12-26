@@ -60,7 +60,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
     }
     @Operation(summary = "사용자 정보 가져오기", description = "사용자 정보를 가져옵니다.")
-    @GetMapping("/info")
+    @GetMapping("/testInfo")
     public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId=customUserDetails.getId();
         MemberDto memberDto = memberService.getMember(userId);
