@@ -1,16 +1,13 @@
 package com.choandyoo.jett.member.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.choandyoo.jett.member.enums.Role;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.choandyoo.jett.travel.entity.Travel;
+import com.choandyoo.jett.travel.entity.TravelMember;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,6 +34,10 @@ public class Member {
     private LocalDateTime lastLoginDate;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "member")
+    private List<TravelMember> travelMembers;
+
 
     public void updateLastLoginDate() {
         this.lastLoginDate = LocalDateTime.now();
