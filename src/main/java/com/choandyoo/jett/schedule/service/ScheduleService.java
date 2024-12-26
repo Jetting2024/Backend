@@ -4,13 +4,11 @@ import com.choandyoo.jett.schedule.dto.ScheduleRequest;
 import com.choandyoo.jett.schedule.dto.ScheduleResponse;
 import com.choandyoo.jett.schedule.entity.Schedule;
 import com.choandyoo.jett.schedule.repository.ScheduleRepository;
-import com.choandyoo.jett.travel.dto.TravelRequest;
 import com.choandyoo.jett.travel.entity.Travel;
 import com.choandyoo.jett.travel.repository.TravelRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

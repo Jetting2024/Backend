@@ -6,7 +6,7 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "travel_members")
+@Table(name = "Travel_Member")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -20,9 +20,9 @@ import java.util.List;
 @Builder
 @Entity
 @Getter
-@SQLDelete(sql = "UPDATE travel SET deleted = true WHERE travelId = ?")
+@SQLDelete(sql = "UPDATE Travel SET deleted = true WHERE travelId = ?")
 @Where(clause = "deleted = false")
-@Table(name = "travel")
+@Table(name = "Travel")
 public class Travel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -26,8 +26,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp", "/**", "/member/**"};
-    private final String[] AUTHENTICATED_URL = {"/member/**"};
+    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp", "/**", "/member/**","/travel/**"};
+    private final String[] AUTHENTICATED_URL = {"/member/**","/travel/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

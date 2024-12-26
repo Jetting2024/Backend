@@ -1,7 +1,5 @@
-package com.choandyoo.jett.travel.dto;
+package com.choandyoo.jett.travel.dto.request;
 
-import com.choandyoo.jett.member.entity.Member;
-import com.choandyoo.jett.member.enums.Role;
 import com.choandyoo.jett.travel.entity.Travel;
 import lombok.*;
 
