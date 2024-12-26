@@ -32,6 +32,12 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(tokenResponseDto));
     }
 
+    @PostMapping("/test")
+    public ResponseEntity<CustomApiResponse<String>> test() {
+        System.out.println("hhhhh");
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success"));
+    }
+
     @Operation(summary = "카카오 로그인", description = "카카오 로그인을 처리합니다.")
     @GetMapping("/kakao")
     public RedirectView kakaoConnect() {

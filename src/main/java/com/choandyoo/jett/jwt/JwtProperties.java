@@ -16,6 +16,6 @@ public class JwtProperties {
     private String authoritiesKey;
     private String accessTokenHeader;
     private String refreshTokenHeader;
-    private String accessTokenExpire;
-    private String refreshTokenExpire;
+    private Long accessTokenExpire;
+    private Long refreshTokenExpire;
 }
