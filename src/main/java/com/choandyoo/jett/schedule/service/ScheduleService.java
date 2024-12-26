@@ -33,6 +33,13 @@ public class ScheduleService {
             throw new IllegalArgumentException("이 유저는 해당 여행에 대한 권한이 없습니다(여행 생성자만 일정추가,일정수정,여행과 일정삭제 가능.");
         }
         Travel travel = travelMember.getTravel();
+        boolean isDuplicate = scheduleRepository.existsByTravelAndStartTimeBeforeAndEndTimeAfter(
+                travel, scheduleRequest.getEndTime(), scheduleRequest.getStartTime()
+        );
+
+        if (isDuplicate) {
+            throw new IllegalArgumentException("해당 시간대에 겹치는 일정이 이미 존재합니다.");
+        }
         Schedule schedule = scheduleRequest.toSaveSchedule(travel);
         scheduleRepository.save(schedule);
     }
@@ -41,12 +48,10 @@ public class ScheduleService {
         return scheduleRepository.findByTravel_TravelId(travelId).stream()
                 .map(schedule -> ScheduleResponse.builder()
                         .scheduleId(schedule.getScheduleId())
-                        .date(schedule.getDate())
+                        .startTime(schedule.getStartTime())
+                        .endTime(schedule.getEndTime())
                         .placeName(schedule.getPlaceName())
                         .placeLocation(schedule.getPlaceLocation())
-                        .placeUrl(schedule.getPlaceUrl())
-                        .contactNumber(schedule.getContactNumber())
-                        .image(schedule.getImage())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -17,22 +17,21 @@ import java.util.Date;
 
 public class ScheduleRequest {
 
-    private String contactNumber;
     private String placeLocation;
     private String placeName;
-    private String placeUrl;
-    private LocalDateTime date;
-    private String image;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
 
     public Schedule toSaveSchedule(Travel travel) {
         return Schedule.builder()
                 .travel(travel)
-                .contactNumber(contactNumber)
-                .date(date)
                 .placeName(placeName)
                 .placeLocation(placeLocation)
-                .placeUrl(placeUrl)
-                .image(image)
+                .startTime(startTime)
+                .endTime(endTime)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }

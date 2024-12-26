@@ -16,11 +16,9 @@ import java.time.LocalDateTime;
 public class ScheduleResponse {
 
     private Long scheduleId;
-    private LocalDateTime date;
     private String placeName;
     private String placeLocation;
-    private String placeUrl;
-    private String contactNumber;
-    private String image;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
 }
