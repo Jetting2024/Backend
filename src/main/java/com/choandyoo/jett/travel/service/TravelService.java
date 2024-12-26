@@ -65,12 +65,11 @@ public class TravelService {
         String email = travelInviteRequest.getEmail();
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 사용자가 없습니다."));
-        Long userId = member.getId();
         TravelMember travelMember = TravelMember.builder()
                 .member(member)  // 초대된 사용자
                 .travel(travel)  // 해당 여행
                 .build();
-
+        travelMemberRepository.save(travelMember);
 
     }
 
