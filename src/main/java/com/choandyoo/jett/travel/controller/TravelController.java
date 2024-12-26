@@ -1,6 +1,7 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
+import com.choandyoo.jett.config.CustomUserDetails;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
 import com.choandyoo.jett.travel.dto.request.TravelRequest;
 import com.choandyoo.jett.travel.dto.response.TravelResponse;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +34,9 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(searchResult));
     }
     @Operation(summary = "여행 생성",description = " 여행 생성하기")
-    @PostMapping("/{userId}")
-    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest, @PathVariable Long userId) {
+    @PostMapping()
+    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId=customUserDetails.getId();
         travelService.addTravel(userId,travelRequest);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("여행 생성됌"));
     }
@@ -45,16 +48,18 @@ public class TravelController {
     }
 
     @Operation(summary = "그 유저에 대한 여행 조회", description = "그 유저에 대한 전체 모든 여행 조회")
-    @GetMapping("/lists/{userId}")
-    public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule(@PathVariable Long userId) {
+    @GetMapping("/lists")
+    public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule( @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long userId=customUserDetails.getId();
         List<TravelResponse> checkTravelResult = travelService.getAllTravel(userId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checkTravelResult));
     }
     @Operation(summary = "소프트 딜리트 여행 삭제",description = "여행 삭제")
-    @DeleteMapping("/Hard/{userId}/{travelId}")
-    public ResponseEntity<CustomApiResponse<String>> deleteTravel(@PathVariable Long userId,@PathVariable Long travelId) {
+    @DeleteMapping("/Hard/{travelId}")
+    public ResponseEntity<CustomApiResponse<String>> deleteTravel(@AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long travelId) {
+        Long userId=customUserDetails.getId();
         travelService.deleteTravel(userId,travelId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess(null));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess("여행 삭제됌"));
 
     }
 
