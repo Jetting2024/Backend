@@ -18,6 +18,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
+        String roles = member.getRole().toString();
+        for(String role : roles.split(",")) {
+            authorities.add(() -> role);
+        }
         return authorities;
     }
 
