@@ -1,7 +1,6 @@
 package com.choandyoo.jett.travel.controller;
 
 import com.choandyoo.jett.common.CustomApiResponse;
-import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
 import com.choandyoo.jett.travel.dto.request.TravelRequest;
 import com.choandyoo.jett.travel.dto.response.TravelResponse;
@@ -45,10 +44,10 @@ public class TravelController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("친구 초대됌"));
     }
 
-    @Operation(summary = "그 유저에 대한 여행 조회", description = "그 유저에 대한 전체 모든 여행 일정조회")
+    @Operation(summary = "그 유저에 대한 여행 조회", description = "그 유저에 대한 전체 모든 여행 조회")
     @GetMapping("/lists/{userId}")
     public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule(@PathVariable Long userId) {
-        List<TravelResponse> checkTravelResult = travelService.getAllTravelByUserId(userId);
+        List<TravelResponse> checkTravelResult = travelService.getAllTravel(userId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(checkTravelResult));
     }
     @Operation(summary = "소프트 딜리트 여행 삭제",description = "여행 삭제")

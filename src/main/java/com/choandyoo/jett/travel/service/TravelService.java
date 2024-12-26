@@ -25,8 +25,9 @@ public class TravelService {
     private final MemberRepository memberRepository;
     private final TravelMemberRepository travelMemberRepository;
 
-    public List<TravelResponse> getAllTravelByUserId(Long userId) {
-        return travelRepository.findById(userId).stream()
+    public List<TravelResponse> getAllTravel(Long userId) {
+        List<Travel> travels = travelRepository.findByTravelMembers_Member_Id(userId);
+        return travels.stream()
                 .map(travel -> TravelResponse.builder()
                         .travelId(travel.getTravelId())
                         .travelName(travel.getTravelName())
