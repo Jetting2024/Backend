@@ -15,11 +15,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class ChatService {
-    private final ObjectMapper objectMapper;
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
 
@@ -46,5 +47,13 @@ public class ChatService {
                 .roomName(chatRoom.getRoomName())
                 .build();
         return chatRoomInfoDto;
+    }
+
+    @Transactional
+    public List<ChatMessageDto> getMessages(Long roomId) {
+        return chatMessageRepository.findAllByRoomId(roomId)
+                .stream()
+                .map(ChatMessageDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Document(collection = "chat")
 public class ChatMessage {
     @Id
-    private long roomId;
-    private long userId;
+    private Long roomId;
+    private Long userId;
     private String message;
     private LocalDateTime createdAt;
 }
