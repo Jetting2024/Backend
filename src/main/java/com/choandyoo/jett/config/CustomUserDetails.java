@@ -18,6 +18,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
+        String roles = member.getRole().toString();
+        for(String role : roles.split(",")) {
+            authorities.add(() -> role);
+        }
         return authorities;
     }
 
@@ -26,6 +30,9 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {return member.getEmail();}
+
+
+    public Long getId() {return member.getId();} // Member 엔티티의 ID를 반환}
 
     @Override
     public boolean isAccountNonExpired() {return true;}

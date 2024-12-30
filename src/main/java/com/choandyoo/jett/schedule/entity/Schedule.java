@@ -24,7 +24,11 @@ public class Schedule {
     private Travel travel; // 특정 여행에 속한 스케줄임을 나타냄
 
     @Column
-    private LocalDateTime date;
+    private LocalDateTime startTime;
+
+    @Column
+    private LocalDateTime endTime;
+
 
     @Column
     private String placeName;
@@ -33,12 +37,10 @@ public class Schedule {
     private String placeLocation;
 
     @Column
-    private String placeUrl;
+    private LocalDateTime createdAt;
 
     @Column
-    private String contactNumber;
+    private LocalDateTime updatedAt;
 
-    @Column
-    private String image;
 
 }

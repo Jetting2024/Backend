@@ -2,7 +2,7 @@ package com.choandyoo.jett.member.service;
 
 import com.choandyoo.jett.config.KakaoOAuth2Config;
 import com.choandyoo.jett.jwt.JwtToken;
-import com.choandyoo.jett.jwt.JwtTokenProvider;
+import com.choandyoo.jett.jwt.JwtUtil;
 import com.choandyoo.jett.member.dto.*;
 import com.choandyoo.jett.member.enums.Role;
 import com.google.gson.JsonObject;
@@ -11,9 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +37,7 @@ import java.util.Map;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
     private final KakaoOAuth2Config kakaoOAuth2Config;
 
     @Transactional
@@ -59,14 +55,8 @@ public class MemberService {
 
     @Transactional
     public TokenResponseDto login(LoginRequestDto loginRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginRequestDto.getEmail(), loginRequestDto.getPassword());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-        JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
-        Member member = memberRepository.findMemberByEmail(loginRequestDto.getEmail())
-                .orElseThrow(() -> new RuntimeException("no user"));
+        Member member = memberRepository.findMemberByEmail(loginRequestDto.getEmail()).orElseThrow(()-> new RuntimeException("no user"));
+        JwtToken jwtToken = jwtUtil.generateToken(member.getEmail());
         return new TokenResponseDto(member.getId(), jwtToken);
     }
 

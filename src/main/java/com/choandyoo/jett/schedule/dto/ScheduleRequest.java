@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Builder
@@ -16,22 +17,21 @@ import java.time.LocalDateTime;
 
 public class ScheduleRequest {
 
-    private String contactNumber;
     private String placeLocation;
     private String placeName;
-    private String placeUrl;
-    private LocalDateTime date;
-    private String image;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
-    public Schedule toSaveSchedule(Travel travel, ScheduleRequest scheduleRequest) {
+
+    public Schedule toSaveSchedule(Travel travel) {
         return Schedule.builder()
                 .travel(travel)
-                .contactNumber(scheduleRequest.getContactNumber())
-                .date(scheduleRequest.getDate())
-                .placeName(scheduleRequest.getPlaceName())
-                .placeLocation(scheduleRequest.getPlaceLocation())
-                .placeUrl(scheduleRequest.getPlaceUrl())
-                .image(scheduleRequest.getImage())
+                .placeName(placeName)
+                .placeLocation(placeLocation)
+                .startTime(startTime)
+                .endTime(endTime)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 }
