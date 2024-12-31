@@ -94,18 +94,13 @@ public class MemberService {
         );
 
         Map<String, String> responseBody = (Map<String, String>) response.getBody();
-        System.out.println("response = "+responseBody);
+
         String grantType = responseBody.get("token_type");
         String accessToken = responseBody.get("access_token");
         String refreshToken = responseBody.get("refresh_token");
-        long idx = loginKakaoMember(accessToken);
+        TokenResponseDto tokenResponseDto = loginKakaoMember(accessToken);
 
-        JwtToken jwtToken = JwtToken.builder()
-                .grantType(grantType)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-        return new TokenResponseDto(idx, jwtToken);
+        return tokenResponseDto;
     }
 
     @Transactional
@@ -115,10 +110,11 @@ public class MemberService {
     }
 
     @Transactional
-    public long loginKakaoMember(String accessToken) {
+    public TokenResponseDto loginKakaoMember(String accessToken) {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         String id = "";
         String name = "";
+        JwtToken jwtToken = new JwtToken();
         try {
             URL url = new URL(reqURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -140,17 +136,19 @@ public class MemberService {
 
             name = properties.get("nickname").getAsString();
             //email을 카카오에서 받아올 수 없으니 일단 ID로 테스트용
-            id = object.get("id").getAsString();
+//            id = object.get("id").getAsString();
+
+            jwtToken = jwtUtil.generateToken(name);
 
         } catch(IOException e) {
             e.printStackTrace();
         }
 
-        boolean isDuplicate = memberRepository.findMemberByEmail(id).isPresent();
+        boolean isDuplicate = memberRepository.findMemberByEmail(name).isPresent();
         if(!isDuplicate) {
             Member savedMember = Member.builder()
                     .name(name)
-                    .email(id)
+                    .email(name)
                     .password("1111")  //비밀번호 1111로 테스트용
                     .createdDate(LocalDateTime.now())
                     .lastLoginDate(LocalDateTime.now())
@@ -158,10 +156,10 @@ public class MemberService {
                     .build();
             memberRepository.save(savedMember);
         } else {
-            updateLastLoginDate(id);
+            updateLastLoginDate(name);
         }
-        Member member = memberRepository.findMemberByEmail(id).orElseThrow(() -> new RuntimeException("no user"));
-        return member.getId();
+        Member member = memberRepository.findMemberByEmail(name).orElseThrow(() -> new RuntimeException("no user"));
+        return new TokenResponseDto(member.getId(), jwtToken);
     }
 
     @Transactional
