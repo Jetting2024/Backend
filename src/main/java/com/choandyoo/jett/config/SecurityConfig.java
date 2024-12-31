@@ -24,7 +24,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp","/travel/**"};
+
+    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp"};
     private final String[] AUTHENTICATED_URL = {"/member/**","/travel/**", "/chat/**"};
 
     @Bean

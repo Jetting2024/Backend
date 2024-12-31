@@ -34,12 +34,6 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(tokenResponseDto));
     }
 
-    @PostMapping("/test")
-    public ResponseEntity<CustomApiResponse<String>> test() {
-        System.out.println("hhhhh");
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success"));
-    }
-
     @Operation(summary = "카카오 로그인", description = "카카오 로그인을 처리합니다.")
     @GetMapping("/kakao")
     public RedirectView kakaoConnect() {
@@ -54,13 +48,7 @@ public class MemberController {
     }
 
     @Operation(summary = "사용자 정보 가져오기", description = "사용자 정보를 가져옵니다.")
-    @GetMapping("/info/{idx}")
-    public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@PathVariable("idx")Long idx) {
-        MemberDto memberDto = memberService.getMember(idx);
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(memberDto));
-    }
-    @Operation(summary = "사용자 정보 가져오기", description = "사용자 정보를 가져옵니다.")
-    @GetMapping("/testInfo")
+    @GetMapping("/getInfo")
     public ResponseEntity<CustomApiResponse<MemberDto>> getMember(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId=customUserDetails.getId();
         MemberDto memberDto = memberService.getMember(userId);
