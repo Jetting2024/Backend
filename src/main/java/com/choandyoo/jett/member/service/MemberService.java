@@ -114,6 +114,7 @@ public class MemberService {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         String id = "";
         String name = "";
+        String image = "";
         JwtToken jwtToken = new JwtToken();
         try {
             URL url = new URL(reqURL);
@@ -134,7 +135,9 @@ public class MemberService {
             JsonObject object = (JsonObject) JsonParser.parseString(result);
             JsonObject properties = (JsonObject) object.getAsJsonObject().get("properties");
 
+            System.out.println("properties=" + properties.toString());
             name = properties.get("nickname").getAsString();
+            image = properties.get("profile_image").getAsString();
             //email을 카카오에서 받아올 수 없으니 일단 ID로 테스트용
 //            id = object.get("id").getAsString();
 
@@ -150,6 +153,7 @@ public class MemberService {
                     .name(name)
                     .email(name)
                     .password("1111")  //비밀번호 1111로 테스트용
+                    .image(image)
                     .createdDate(LocalDateTime.now())
                     .lastLoginDate(LocalDateTime.now())
                     .role(Role.ROLE_USER)
@@ -169,6 +173,7 @@ public class MemberService {
                 .id(member.getId())
                 .email(member.getEmail())
                 .name(member.getName())
+                .image(member.getImage())
                 .build();
     }
 }

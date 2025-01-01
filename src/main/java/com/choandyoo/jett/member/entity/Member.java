@@ -29,6 +29,8 @@ public class Member {
     @Column
     private String password;
     @Column
+    private String image;
+    @Column
     private LocalDateTime createdDate;
     @Column
     private LocalDateTime lastLoginDate;
