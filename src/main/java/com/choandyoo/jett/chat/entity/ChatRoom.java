@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import net.minidev.json.JSONArray;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
@@ -18,12 +18,13 @@ public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long roomId;
-    @Column
-    private long userId;
-    @Column
-    private String member;
+
     @Column
     private String roomName;
+
+    @OneToMany(mappedBy = "chatRoom")
+    private List<ChatRoomMember> chatRoomMembers;
+
     @Column
     private LocalDateTime createdAt;
 }

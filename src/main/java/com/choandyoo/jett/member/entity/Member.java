@@ -3,6 +3,7 @@ package com.choandyoo.jett.member.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.choandyoo.jett.chat.entity.ChatRoomMember;
 import com.choandyoo.jett.member.enums.Role;
 
 import com.choandyoo.jett.travel.entity.Travel;
@@ -38,6 +39,8 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<TravelMember> travelMembers;
 
+    @OneToMany(mappedBy = "member")
+    private List<ChatRoomMember> chatRoomMembers;
 
     public void updateLastLoginDate() {
         this.lastLoginDate = LocalDateTime.now();

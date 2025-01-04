@@ -11,12 +11,13 @@ import java.util.Arrays;
 
 @Configuration
 public class CorsConfig {
+    private String[] port = {"http://localhost:3000", "http://localhost:3001"};
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 클라이언트 도메인
+        config.setAllowedOrigins(Arrays.asList(port)); // 클라이언트 도메인
         config.setAllowedMethods(Arrays.asList("*")); // "GET", "POST", "PUT", "DELETE"
         config.setAllowedHeaders(Arrays.asList("*"));
 
