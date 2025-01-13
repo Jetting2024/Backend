@@ -38,7 +38,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void addChatroomMember(long userId, Long roomId) {
+    public void addChatroomMember(Long userId, Long roomId) {
         Member member = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("no user"));
         ChatRoom chatRoom = chatRepository.findById(roomId).orElseThrow(() -> new RuntimeException("no chatroom"));
         ChatRoomMember chatRoomMember = ChatRoomMember.builder()

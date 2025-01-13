@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // 해당 주소를 구독하고 있는 클라이언트들에게 메시지 전달
         config.enableSimpleBroker("/sub");
-        // 클라이언트에서 보낸 메세지를 받을 prefix
+        // 클라이언트에서 서버에 보낼 때 사용할 prefix
         config.setApplicationDestinationPrefixes("/pub");
     }
 
