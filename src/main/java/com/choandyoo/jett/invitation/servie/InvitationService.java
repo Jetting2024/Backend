@@ -8,6 +8,7 @@ import com.choandyoo.jett.invitation.dto.InviteStatusDto;
 import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.member.repository.MemberRepository;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
+import com.choandyoo.jett.travel.entity.Travel;
 import com.choandyoo.jett.travel.repository.TravelRepository;
 import com.choandyoo.jett.travel.service.TravelService;
 import jakarta.transaction.Transactional;
@@ -28,11 +29,6 @@ public class InvitationService {
 
     @Transactional
     public String generateInvitation(Long travelId) {
-        boolean isPresent = travelRepository.findById(travelId).isPresent();
-        if(!isPresent) {
-            new RuntimeException("해당 여행 일정이 존재하지 않습니다.");
-        }
-
         String key = INVITE_LINK_PREFIX.formatted(travelId);
         String existingValue = redisService.getValues(key);
 
@@ -47,15 +43,11 @@ public class InvitationService {
     @Transactional
     public boolean inviteClick(InviteClickDto inviteClickDto) {
         String validInvitation = redisService.getValues("travelId=" + inviteClickDto.getTravelId());
-        Long travelId = inviteClickDto.getTravelId();
 
-        boolean isPresent = travelRepository.findById(travelId).isPresent();
-        if(!isPresent) {
-            new RuntimeException("the travel do not exist.");
-        } else if (validInvitation == null || validInvitation.isEmpty()) {
+        if(validInvitation == null || validInvitation.isEmpty()) {
             new RuntimeException("Invalid or expired invitation");
-        } else if(validInvitation.equals(inviteClickDto.getInvitation())) {
-            new RuntimeException("travelId and invitation do not match.");
+        } else if(!validInvitation.equals(inviteClickDto.getInvitation())) {
+            new RuntimeException("travelId and invitation do not match");
         }
         return true;
     }

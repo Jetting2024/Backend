@@ -34,7 +34,7 @@ public class InvitationController {
     public ResponseEntity<CustomApiResponse<String>> inviteClick(@Payload InviteClickDto inviteClickDto) {
         boolean validInvitation = invitationService.inviteClick(inviteClickDto);
         if(validInvitation) {
-            template.convertAndSend("/alert/" + inviteClickDto.getTravelId(), inviteClickDto);
+            template.convertAndSend("/sub/alert/" + inviteClickDto.getTravelId(), inviteClickDto);
         }
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success click"));
     }
