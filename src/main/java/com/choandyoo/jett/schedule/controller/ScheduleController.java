@@ -24,10 +24,10 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     @Operation(summary = "여행 일정 추가", description = "여행 일정 추가")
     @PostMapping("/{travelId}/add")
-    public ResponseEntity<CustomApiResponse<String>> addSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId , @RequestBody ScheduleRequest scheduleRequest) {
+    public ResponseEntity<CustomApiResponse<Long>> addSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId , @RequestBody ScheduleRequest scheduleRequest) {
         Long userId=customUserDetails.getId();
-        scheduleService.addSchedule(userId,travelId, scheduleRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CustomApiResponse.onSuccess("일정이 성공적으로 추가되었습니다."));
+        Long scheduleId=scheduleService.addSchedule(userId,travelId, scheduleRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(CustomApiResponse.onSuccess(scheduleId));
     }
 
 

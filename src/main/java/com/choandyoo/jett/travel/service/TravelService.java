@@ -41,7 +41,7 @@ public class TravelService {
     }
 
     @Transactional
-    public void addTravel(Long userId,TravelRequest travelRequest) {
+    public Long addTravel(Long userId,TravelRequest travelRequest) {
         Member user = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다. ID: " + userId));
         Travel travel = travelRequest.toSaveTravel();
@@ -52,6 +52,7 @@ public class TravelService {
                 .role(Role.ROLE_ADMIN)
                 .build();
         travelMemberRepository.save(travelMember);
+        return travel.getTravelId();
 
     }
     @Transactional
