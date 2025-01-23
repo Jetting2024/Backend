@@ -9,16 +9,13 @@ import com.choandyoo.jett.chat.entity.ChatRoomMember;
 import com.choandyoo.jett.chat.repository.ChatMessageRepository;
 import com.choandyoo.jett.chat.repository.ChatRepository;
 import com.choandyoo.jett.chat.repository.ChatRoomMemberRepository;
+import com.choandyoo.jett.member.dto.MemberDto;
 import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.member.repository.MemberRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,17 +51,24 @@ public class ChatService {
         chatMessageRepository.save(savedChatMessage);
     }
 
-//    @Transactional
-//    public ChatRoomInfoDto getChatroom(Long chatroomId) {
-//        ChatRoom chatRoom = chatRepository.findById(chatroomId).orElseThrow(() -> new RuntimeException("no chatRoom"));
-//        ChatRoomInfoDto chatRoomInfoDto = ChatRoomInfoDto.builder()
-//                .roomId(chatRoom.getRoomId())
-//                .userId(chatRoom.getUserId())
-//                .member(chatRoom.getMember())
-//                .roomName(chatRoom.getRoomName())
-//                .build();
-//        return chatRoomInfoDto;
-//    }
+    @Transactional
+    public ChatRoomInfoDto getChatroom(Long chatroomId) {
+        ChatRoom chatRoom = chatRepository.findById(chatroomId).orElseThrow(() -> new RuntimeException("no chatRoom"));
+        List<MemberDto> memberDtos = chatRoom.getChatRoomMembers().stream()
+                .map(chatRoomMember -> MemberDto.builder()
+                        .id(chatRoomMember.getMember().getId())
+                        .name(chatRoomMember.getMember().getName())
+                        .email(chatRoomMember.getMember().getEmail())
+                        .build())
+                .toList();
+
+        ChatRoomInfoDto chatRoomInfoDto = ChatRoomInfoDto.builder()
+                .roomId(chatRoom.getRoomId())
+                .roomName(chatRoom.getRoomName())
+                .members(memberDtos)
+                .build();
+        return chatRoomInfoDto;
+    }
 
     @Transactional
     public List<ChatMessageDto> getMessages(Long roomId) {

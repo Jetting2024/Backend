@@ -39,12 +39,12 @@ public class ChatController {
         template.convertAndSend("/sub/chat/room/"+chatMessageDto.getRoomId(), chatMessageDto.getMessage());
     }
 
-//    @Operation(summary = "채팅방 불러오기", description = "채팅방 불러오기")
-//    @GetMapping("/chat/info/{chatroomId}")
-//    public ResponseEntity<CustomApiResponse<ChatRoomInfoDto>> getChatroom(@PathVariable("chatroomId") Long chatroomId) {
-//        ChatRoomInfoDto chatRoomInfoDto = chatService.getChatroom(chatroomId);
-//        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(chatRoomInfoDto));
-//    }
+    @Operation(summary = "채팅방 불러오기", description = "채팅방 불러오기")
+    @GetMapping("/chat/info/{chatroomId}")
+    public ResponseEntity<CustomApiResponse<ChatRoomInfoDto>> getChatroom(@PathVariable("chatroomId") Long chatroomId) {
+        ChatRoomInfoDto chatRoomInfoDto = chatService.getChatroom(chatroomId);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(chatRoomInfoDto));
+    }
 
     @Operation(summary = "채팅 내용 불러오기", description = "특정 채팅방에서 채팅 내용 불러오기")
     @GetMapping("/chat/{chatroomId}/getMessages")
