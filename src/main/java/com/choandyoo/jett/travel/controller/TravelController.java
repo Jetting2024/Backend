@@ -35,10 +35,10 @@ public class TravelController {
     }
     @Operation(summary = "여행 생성",description = " 여행 생성하기")
     @PostMapping()
-    public ResponseEntity<CustomApiResponse<String>> addTravel(@RequestBody TravelRequest travelRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CustomApiResponse<Long>> addTravel(@RequestBody TravelRequest travelRequest, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long userId=customUserDetails.getId();
-        travelService.addTravel(userId,travelRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("여행 생성됌"));
+        Long travelId=travelService.addTravel(userId,travelRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(travelId));
     }
     @Operation(summary = "여행에 친구 초대",description = " 여행에 친구들 초대하기")
     @PostMapping("/invite/{travelId}")

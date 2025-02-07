@@ -26,7 +26,7 @@ public class ScheduleService {
     private final TravelMemberRepository travelMemberRepository;
 
     @Transactional
-    public void addSchedule(Long userId,Long travelId,ScheduleRequest scheduleRequest) {
+    public Long addSchedule(Long userId,Long travelId,ScheduleRequest scheduleRequest) {
         TravelMember travelMember = travelMemberRepository.findByMember_IdAndTravel_TravelId(userId, travelId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없거나 그 유저에 대한 트래블 아이디가 틀립니다."));
         if (travelMember.getRole() != Role.ROLE_ADMIN) {
@@ -42,6 +42,7 @@ public class ScheduleService {
         }
         Schedule schedule = scheduleRequest.toSaveSchedule(travel);
         scheduleRepository.save(schedule);
+        return schedule.getScheduleId();
     }
 
     public List<ScheduleResponse> getAllSchedule(Long travelId) {
