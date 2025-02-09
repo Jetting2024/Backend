@@ -4,8 +4,10 @@ import com.choandyoo.jett.common.CustomApiResponse;
 import com.choandyoo.jett.config.CustomUserDetails;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
 import com.choandyoo.jett.travel.dto.request.TravelRequest;
+import com.choandyoo.jett.travel.dto.response.PopularPlaceResponse;
 import com.choandyoo.jett.travel.dto.response.TravelResponse;
 import com.choandyoo.jett.travel.service.KakaoService;
+import com.choandyoo.jett.travel.service.TourApiService;
 import com.choandyoo.jett.travel.service.TravelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +28,7 @@ import java.util.List;
 public class TravelController {
     private final KakaoService kakaoService;
     private final TravelService travelService;
+    private final TourApiService tourApiService;
 
     @Operation(summary = "장소 검색", description = "키워드를 통해 장소 검색하기")
     @GetMapping("/kakao/searchKeyword")
@@ -63,7 +66,15 @@ public class TravelController {
 
     }
 
+    @Operation(summary = "지역별 인기여행지 조회",description = "지역을 입력받을 후 해당하는 위치 관광지 조회")
+    @GetMapping("/popularLists")
+    public ResponseEntity<CustomApiResponse<List<PopularPlaceResponse>>> getPopularPlace(@RequestParam String place) {
+        try {
+            List<PopularPlaceResponse> popularResults = tourApiService.getJsonResponse(place);
+            return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(popularResults));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CustomApiResponse.onFailure(e.getMessage(),null));
+        }
+    }
+
 }
-
-
-

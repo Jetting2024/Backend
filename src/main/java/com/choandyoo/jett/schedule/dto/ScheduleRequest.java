@@ -19,6 +19,7 @@ public class ScheduleRequest {
 
     private String placeLocation;
     private String placeName;
+    private String placeUrl ;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -28,6 +29,7 @@ public class ScheduleRequest {
                 .travel(travel)
                 .placeName(placeName)
                 .placeLocation(placeLocation)
+                .placeUrl(placeUrl)
                 .startTime(startTime)
                 .endTime(endTime)
                 .createdAt(LocalDateTime.now())

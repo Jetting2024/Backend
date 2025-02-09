@@ -53,6 +53,7 @@ public class ScheduleService {
                         .endTime(schedule.getEndTime())
                         .placeName(schedule.getPlaceName())
                         .placeLocation(schedule.getPlaceLocation())
+                        .placeUrl(schedule.getPlaceUrl())
                         .build())
                 .collect(Collectors.toList());
     }
