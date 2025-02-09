@@ -46,8 +46,8 @@ public class InvitationController {
         if(status.equals("ACCEPT")) {
             invitationService.inviteResponse(inviteStatusDto);
         }
-        template.convertAndSend("/alert/" + inviteStatusDto.getTravelId(), inviteStatusDto);
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success response"));
+        template.convertAndSend("/sub/alert/" + inviteStatusDto.getTravelId(), inviteStatusDto);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("inviteResponse: " + status));
     }
 
 }
