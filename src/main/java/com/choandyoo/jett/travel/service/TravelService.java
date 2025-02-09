@@ -2,8 +2,10 @@ package com.choandyoo.jett.travel.service;
 
 import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.member.repository.MemberRepository;
+import com.choandyoo.jett.schedule.repository.ScheduleRepository;
 import com.choandyoo.jett.travel.dto.request.TravelInviteRequest;
 import com.choandyoo.jett.travel.dto.request.TravelRequest;
+import com.choandyoo.jett.travel.dto.response.PopularPlaceResponse;
 import com.choandyoo.jett.travel.dto.response.TravelResponse;
 import com.choandyoo.jett.travel.entity.Travel;
 import com.choandyoo.jett.travel.entity.TravelMember;
@@ -82,7 +84,6 @@ public class TravelService {
         travelMemberRepository.save(travelMember);
 
     }
-
 
 
 }

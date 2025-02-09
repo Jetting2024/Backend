@@ -18,6 +18,7 @@ public class ScheduleResponse {
     private Long scheduleId;
     private String placeName;
     private String placeLocation;
+    private String placeUrl;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

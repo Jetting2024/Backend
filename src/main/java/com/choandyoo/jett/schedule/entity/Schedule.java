@@ -29,6 +29,8 @@ public class Schedule {
     @Column
     private LocalDateTime endTime;
 
+    @Column
+    private String placeUrl ;
 
     @Column
     private String placeName;
