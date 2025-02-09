@@ -2,10 +2,7 @@ package com.choandyoo.jett.schedule.entity;
 
 import com.choandyoo.jett.travel.entity.Travel;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Getter
+@Setter
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +40,11 @@ public class Schedule {
     private LocalDateTime createdAt;
 
     @Column
+    private int dayNum;
+
+    @Column
     private LocalDateTime updatedAt;
+
 
 
 }

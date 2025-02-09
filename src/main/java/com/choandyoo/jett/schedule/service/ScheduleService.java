@@ -16,6 +16,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -33,6 +36,19 @@ public class ScheduleService {
             throw new IllegalArgumentException("이 유저는 해당 여행에 대한 권한이 없습니다(여행 생성자만 일정추가,일정수정,여행과 일정삭제 가능.");
         }
         Travel travel = travelMember.getTravel();
+
+        LocalDate travelStartTime = travel.getStartDate();
+        LocalDate travelEndTime = travel.getEndDate();
+        LocalDateTime ScheduleStartTime = scheduleRequest.getStartTime();
+        LocalDateTime ScheduleEndTime = scheduleRequest.getEndTime();
+        if (ScheduleStartTime.toLocalDate().isBefore(travelStartTime) || ScheduleEndTime.toLocalDate().isAfter(travelEndTime)) {
+            throw new IllegalArgumentException("일정이 여행 기간을 벗어났습니다.");
+        }
+        int dayNumber=(int) ChronoUnit.DAYS.between(travelStartTime, ScheduleStartTime) + 1;
+
+
+
+
         boolean isDuplicate = scheduleRepository.existsByTravelAndStartTimeBeforeAndEndTimeAfter(
                 travel, scheduleRequest.getEndTime(), scheduleRequest.getStartTime()
         );
@@ -41,6 +57,8 @@ public class ScheduleService {
             throw new IllegalArgumentException("해당 시간대에 겹치는 일정이 이미 존재합니다.");
         }
         Schedule schedule = scheduleRequest.toSaveSchedule(travel);
+        schedule.setDayNum(dayNumber);
+
         scheduleRepository.save(schedule);
         return schedule.getScheduleId();
     }
