@@ -46,8 +46,9 @@ public class InvitationController {
         if(status.equals("ACCEPT")) {
             invitationService.inviteResponse(inviteStatusDto);
         }
-        template.convertAndSend("/alert/" + inviteStatusDto.getTravelId(), inviteStatusDto);
-        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success response"));
+        // 수락 또는 거절 상태를 초대 받은 사용자에게 전달
+        template.convertAndSend("/sub/inviteStatus/" + inviteStatusDto.getTravelId(), inviteStatusDto);
+        return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("inviteResponse: " + status));
     }
 
 }
