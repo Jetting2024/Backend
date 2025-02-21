@@ -4,6 +4,7 @@ import com.choandyoo.jett.travel.entity.Travel;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -38,6 +39,12 @@ public class Schedule {
 
     @Column
     private LocalDateTime createdAt;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;  // 위도
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude; // 경도
 
     @Column
     private int dayNum;

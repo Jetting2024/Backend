@@ -23,30 +23,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TourApiService {
 
-    @Value("${api.serviceKey}") // ✅ application.yml에서 API 키 가져오기
+    @Value("${api.serviceKey}")
     private String serviceKey;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    // ✅ 허용된 지역 리스트
     private static final List<String> VALID_PLACES = Arrays.asList(
             "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종",
             "경기", "강원", "충청북도", "충청남도", "전라북도", "전라남도",
             "경상북도", "경상남도", "제주도"
     );
-
     public List<PopularPlaceResponse> getJsonResponse(String place) {
         List<PopularPlaceResponse> popularPlaces = new ArrayList<>();
-
-        // ✅ 지역명 검증 (허용되지 않은 지역이면 예외 발생)
         if (!VALID_PLACES.contains(place)) {
             throw new IllegalArgumentException("해당 지역은 지원하지 않습니다: " + place);
         }
-
         try {
             String encodedPlace = URLEncoder.encode(place, StandardCharsets.UTF_8);
-
-            // ✅ API 요청 URL 생성
             String urlString = "http://apis.data.go.kr/B551011/KorService1/searchKeyword1"
                     + "?MobileOS=ETC"
                     + "&MobileApp=MobileApp"
@@ -54,17 +45,15 @@ public class TourApiService {
                     + "&keyword=" + encodedPlace
                     + "&serviceKey=" + serviceKey;
 
-            log.info("🚀 최종 API 요청 URL: {}", urlString);
+            log.info("최종 API 요청 URL: {}", urlString);
 
-            // ✅ API 요청
             HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-            // ✅ 응답 처리
             int responseCode = connection.getResponseCode();
-            log.info("✅ 응답 상태 코드: {}", responseCode);
+            log.info("응답 상태 코드: {}", responseCode);
 
             String responseString = "";
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -77,15 +66,14 @@ public class TourApiService {
                     responseString = response.toString();
                 }
             } else {
-                log.error("🚨 API 요청 실패, 응답 코드: {}", responseCode);
-                return popularPlaces; // 빈 리스트 반환
+                log.error("API 요청 실패, 응답 코드: {}", responseCode);
+                return popularPlaces;
             }
 
             connection.disconnect();
 
-            log.info("📌 최종 응답 본문: \n{}", responseString);
+            log.info("최종 응답 본문: \n{}", responseString);
 
-            // ✅ JSON 문자열을 Map으로 변환
             Map<String, Object> responseMap = objectMapper.readValue(responseString, Map.class);
             Map<String, Object> response = (Map<String, Object>) responseMap.get("response");
             if (response == null) return popularPlaces;
@@ -99,7 +87,6 @@ public class TourApiService {
             List<Map<String, Object>> itemList = (List<Map<String, Object>>) items.get("item");
             if (itemList == null) return popularPlaces;
 
-            // ✅ 필요한 데이터만 `PopularPlaceResponse`로 변환
             for (Map<String, Object> item : itemList) {
                 String title = (String) item.get("title");
                 String address = (String) item.getOrDefault("addr1", "주소 없음");
@@ -109,7 +96,7 @@ public class TourApiService {
             }
 
         } catch (Exception e) {
-            log.error("🚨 API 요청 중 오류 발생", e);
+            log.error("API 요청 중 오류 발생", e);
         }
 
         return popularPlaces;

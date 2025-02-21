@@ -19,6 +19,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
@@ -29,39 +30,52 @@ public class ScheduleService {
     private final TravelMemberRepository travelMemberRepository;
 
     @Transactional
-    public Long addSchedule(Long userId,Long travelId,ScheduleRequest scheduleRequest) {
+    public List<Long> addSchedule(Long userId, Long travelId, List<ScheduleRequest> scheduleRequests) {
         TravelMember travelMember = travelMemberRepository.findByMember_IdAndTravel_TravelId(userId, travelId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없거나 그 유저에 대한 트래블 아이디가 틀립니다."));
         if (travelMember.getRole() != Role.ROLE_ADMIN) {
-            throw new IllegalArgumentException("이 유저는 해당 여행에 대한 권한이 없습니다(여행 생성자만 일정추가,일정수정,여행과 일정삭제 가능.");
+            throw new IllegalArgumentException("이 유저는 해당 여행에 대한 권한이 없습니다 (여행 생성자만 일정추가, 일정수정, 여행과 일정삭제 가능).");
         }
-        Travel travel = travelMember.getTravel();
 
+        Travel travel = travelMember.getTravel();
         LocalDate travelStartTime = travel.getStartDate();
         LocalDate travelEndTime = travel.getEndDate();
-        LocalDateTime ScheduleStartTime = scheduleRequest.getStartTime();
-        LocalDateTime ScheduleEndTime = scheduleRequest.getEndTime();
-        if (ScheduleStartTime.toLocalDate().isBefore(travelStartTime) || ScheduleEndTime.toLocalDate().isAfter(travelEndTime)) {
-            throw new IllegalArgumentException("일정이 여행 기간을 벗어났습니다.");
+
+        List<Schedule> schedules = new ArrayList<>();
+        List<Long> savedScheduleIds = new ArrayList<>();
+
+        for (ScheduleRequest scheduleRequest : scheduleRequests) {
+            LocalDateTime scheduleStartTime = scheduleRequest.getStartTime();
+            LocalDateTime scheduleEndTime = scheduleRequest.getEndTime();
+
+            if (scheduleStartTime.toLocalDate().isBefore(travelStartTime) || scheduleEndTime.toLocalDate().isAfter(travelEndTime)) {
+                throw new IllegalArgumentException("일정이 여행 기간을 벗어났습니다.");
+            }
+
+            int dayNumber = (int) ChronoUnit.DAYS.between(travelStartTime, scheduleStartTime) + 1;
+
+            boolean isDuplicate = scheduleRepository.existsByTravelAndStartTimeBeforeAndEndTimeAfter(
+                    travel, scheduleRequest.getEndTime(), scheduleRequest.getStartTime()
+            );
+
+            if (isDuplicate) {
+                throw new IllegalArgumentException("해당 시간대에 겹치는 일정이 이미 존재합니다.");
+            }
+
+            Schedule schedule = scheduleRequest.toSaveSchedule(travel);
+            schedule.setDayNum(dayNumber);
+            schedules.add(schedule);
         }
-        int dayNumber=(int) ChronoUnit.DAYS.between(travelStartTime, ScheduleStartTime) + 1;
 
+        scheduleRepository.saveAll(schedules);
 
-
-
-        boolean isDuplicate = scheduleRepository.existsByTravelAndStartTimeBeforeAndEndTimeAfter(
-                travel, scheduleRequest.getEndTime(), scheduleRequest.getStartTime()
-        );
-
-        if (isDuplicate) {
-            throw new IllegalArgumentException("해당 시간대에 겹치는 일정이 이미 존재합니다.");
+        for (Schedule schedule : schedules) {
+            savedScheduleIds.add(schedule.getScheduleId());
         }
-        Schedule schedule = scheduleRequest.toSaveSchedule(travel);
-        schedule.setDayNum(dayNumber);
 
-        scheduleRepository.save(schedule);
-        return schedule.getScheduleId();
+        return savedScheduleIds;
     }
+
 
     public List<ScheduleResponse> getAllSchedule(Long travelId) {
         return scheduleRepository.findByTravel_TravelId(travelId).stream()
