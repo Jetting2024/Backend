@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -22,6 +23,8 @@ public class ScheduleRequest {
     private String placeUrl ;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
 
     public Schedule toSaveSchedule(Travel travel) {
@@ -32,6 +35,8 @@ public class ScheduleRequest {
                 .placeUrl(placeUrl)
                 .startTime(startTime)
                 .endTime(endTime)
+                .latitude(latitude)
+                .longitude(longitude)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

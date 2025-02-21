@@ -24,9 +24,9 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     @Operation(summary = "여행 일정 추가", description = "여행 일정 추가")
     @PostMapping("/{travelId}/add")
-    public ResponseEntity<CustomApiResponse<Long>> addSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId , @RequestBody ScheduleRequest scheduleRequest) {
+    public ResponseEntity<CustomApiResponse<List<Long>>> addSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId , @RequestBody List<ScheduleRequest> scheduleRequests) {
         Long userId=customUserDetails.getId();
-        Long scheduleId=scheduleService.addSchedule(userId,travelId, scheduleRequest);
+        List<Long> scheduleId=scheduleService.addSchedule(userId,travelId, scheduleRequests);
         return ResponseEntity.status(HttpStatus.CREATED).body(CustomApiResponse.onSuccess(scheduleId));
     }
 
