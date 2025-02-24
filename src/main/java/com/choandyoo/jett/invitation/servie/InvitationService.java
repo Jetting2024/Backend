@@ -22,7 +22,6 @@ import java.util.UUID;
 public class InvitationService {
     private static final String INVITE_LINK_PREFIX = "travelId=%d";
     private final RedisService redisService;
-    private final TravelRepository travelRepository;
     private final TravelService travelService;
     private final ChatService chatService;
     private final MemberRepository memberRepository;

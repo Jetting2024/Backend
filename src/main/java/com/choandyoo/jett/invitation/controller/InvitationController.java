@@ -4,6 +4,8 @@ import com.choandyoo.jett.common.CustomApiResponse;
 import com.choandyoo.jett.invitation.dto.InviteClickDto;
 import com.choandyoo.jett.invitation.dto.InviteStatusDto;
 import com.choandyoo.jett.invitation.servie.InvitationService;
+import com.choandyoo.jett.member.dto.MemberDto;
+import com.choandyoo.jett.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ public class InvitationController {
 
     private final InvitationService invitationService;
     private final SimpMessagingTemplate template;
+    private final MemberService memberService;
 
     @Operation(summary = "초대 링크 생성", description = "travelId에 따른 초대 링크 생성 코드")
     @PostMapping("/invite/{travelId}/invitation")
@@ -34,6 +37,14 @@ public class InvitationController {
     public ResponseEntity<CustomApiResponse<String>> inviteClick(@Payload InviteClickDto inviteClickDto) {
         boolean validInvitation = invitationService.inviteClick(inviteClickDto);
         if(validInvitation) {
+            //초대 받은 사용자의 이름 조회
+            MemberDto memberDto = memberService.getMember(inviteClickDto.getInviteeId());
+            inviteClickDto.builder()
+                            .travelId(inviteClickDto.getTravelId())
+                            .inviteeId(inviteClickDto.getInviteeId())
+                            .inviteeName(memberDto.getName())
+                            .invitation(inviteClickDto.getInvitation())
+                            .build();
             template.convertAndSend("/sub/alert/" + inviteClickDto.getTravelId(), inviteClickDto);
         }
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("success click"));
