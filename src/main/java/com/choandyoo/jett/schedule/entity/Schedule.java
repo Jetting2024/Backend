@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -47,7 +48,7 @@ public class Schedule {
     private BigDecimal longitude; // 경도
 
     @Column
-    private int dayNum;
+    private LocalDate dayNum;
 
     @Column
     private LocalDateTime updatedAt;

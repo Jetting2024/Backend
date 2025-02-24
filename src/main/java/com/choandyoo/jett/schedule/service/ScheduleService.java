@@ -40,30 +40,25 @@ public class ScheduleService {
         Travel travel = travelMember.getTravel();
         LocalDate travelStartTime = travel.getStartDate();
         LocalDate travelEndTime = travel.getEndDate();
+        long fullDays = ChronoUnit.DAYS.between(travelStartTime, travelEndTime) + 1;
 
         List<Schedule> schedules = new ArrayList<>();
         List<Long> savedScheduleIds = new ArrayList<>();
 
         for (ScheduleRequest scheduleRequest : scheduleRequests) {
-            LocalDateTime scheduleStartTime = scheduleRequest.getStartTime();
-            LocalDateTime scheduleEndTime = scheduleRequest.getEndTime();
+            LocalDate dayNum=scheduleRequest.getDayNum();
+            long dayIndex = ChronoUnit.DAYS.between(travelStartTime, dayNum) + 1;
 
-            if (scheduleStartTime.toLocalDate().isBefore(travelStartTime) || scheduleEndTime.toLocalDate().isAfter(travelEndTime)) {
+            if (dayIndex > fullDays || dayIndex < 1) {
                 throw new IllegalArgumentException("일정이 여행 기간을 벗어났습니다.");
             }
-
-            int dayNumber = (int) ChronoUnit.DAYS.between(travelStartTime, scheduleStartTime) + 1;
-
             boolean isDuplicate = scheduleRepository.existsByTravelAndStartTimeBeforeAndEndTimeAfter(
                     travel, scheduleRequest.getEndTime(), scheduleRequest.getStartTime()
             );
-
             if (isDuplicate) {
                 throw new IllegalArgumentException("해당 시간대에 겹치는 일정이 이미 존재합니다.");
             }
-
             Schedule schedule = scheduleRequest.toSaveSchedule(travel);
-            schedule.setDayNum(dayNumber);
             schedules.add(schedule);
         }
 
