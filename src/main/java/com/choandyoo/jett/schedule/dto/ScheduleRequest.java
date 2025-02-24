@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Builder
@@ -21,6 +21,7 @@ public class ScheduleRequest {
     private String placeLocation;
     private String placeName;
     private String placeUrl ;
+    private LocalDate dayNum;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private BigDecimal latitude;
@@ -33,6 +34,7 @@ public class ScheduleRequest {
                 .placeName(placeName)
                 .placeLocation(placeLocation)
                 .placeUrl(placeUrl)
+                .dayNum(dayNum)
                 .startTime(startTime)
                 .endTime(endTime)
                 .latitude(latitude)
