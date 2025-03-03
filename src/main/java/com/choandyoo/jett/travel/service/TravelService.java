@@ -34,7 +34,8 @@ public class TravelService {
                 .map(travel -> TravelResponse.builder()
                         .travelId(travel.getTravelId())
                         .travelName(travel.getTravelName())
-                        .createdAt(travel.getCreatedAt())
+                        .startDate(travel.getStartDate())
+                        .endDate(travel.getEndDate())
                         .participants(travel.getTravelMembers().stream()
                                 .map(travelMember -> travelMember.getMember().getName())  // TravelMember를 통해 참여자 이름 추출
                                 .collect(Collectors.toList()))
