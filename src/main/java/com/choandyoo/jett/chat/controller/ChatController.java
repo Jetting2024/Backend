@@ -16,6 +16,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,7 @@ public class ChatController {
     @MessageMapping("/sendMessage")
     public void sendMessage(@Payload ChatMessageDto chatMessageDto) {
         chatService.saveMessage(chatMessageDto);
-        template.convertAndSend("/sub/chat/room/"+chatMessageDto.getRoomId(), chatMessageDto.getMessage());
+        template.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto.getMessage());
     }
 
     @Operation(summary = "채팅방 불러오기", description = "채팅방 불러오기")
@@ -52,4 +53,6 @@ public class ChatController {
         List<ChatMessageDto> messages = chatService.getMessages(chatroomId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(messages));
     }
+    
+
 }

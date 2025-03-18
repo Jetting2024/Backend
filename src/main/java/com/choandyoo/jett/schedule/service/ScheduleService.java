@@ -81,6 +81,9 @@ public class ScheduleService {
                         .placeName(schedule.getPlaceName())
                         .placeLocation(schedule.getPlaceLocation())
                         .placeUrl(schedule.getPlaceUrl())
+                        .dayNum(schedule.getDayNum())
+                        .latitude(schedule.getLatitude())
+                        .longitude(schedule.getLongitude())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -1,11 +1,14 @@
 package com.choandyoo.jett.schedule.dto;
 
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,5 +24,8 @@ public class ScheduleResponse {
     private String placeUrl;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
+    private LocalDate dayNum;
 
 }
