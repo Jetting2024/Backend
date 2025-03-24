@@ -85,6 +85,22 @@ public class TravelService {
         travelMemberRepository.save(travelMember);
 
     }
+    @Transactional
+    public TravelResponse checkOnlyTravelSchedule(Long userId, Long travelId) {
+        if (!travelRepository.existsById(travelId)) {
+            throw new EntityNotFoundException("Travel not found with id: " + travelId);
+        }
+        Travel travel = travelRepository.findById(travelId).orElseThrow(() -> new EntityNotFoundException("Travel not found with id: " + travelId));
+        return TravelResponse.builder()
+            .travelId(travel.getTravelId())
+            .travelName(travel.getTravelName())
+            .startDate(travel.getStartDate())
+            .endDate(travel.getEndDate())
+            .participants(travel.getTravelMembers().stream()
+                .map(travelMember -> travelMember.getMember().getName())
+                .collect(Collectors.toList()))
+            .build();
+    }
 
 
 }
