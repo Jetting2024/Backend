@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -92,20 +91,14 @@ public class MemberService {
                 httpEntity,
                 Object.class
         );
-
+        //카카오 서버에서 제공해주는 accessToken, refreshToken
         Map<String, String> responseBody = (Map<String, String>) response.getBody();
-        System.out.println("response = "+responseBody);
         String grantType = responseBody.get("token_type");
         String accessToken = responseBody.get("access_token");
         String refreshToken = responseBody.get("refresh_token");
-        long idx = loginKakaoMember(accessToken);
+        TokenResponseDto tokenResponseDto = loginKakaoMember(accessToken);
 
-        JwtToken jwtToken = JwtToken.builder()
-                .grantType(grantType)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-        return new TokenResponseDto(idx, jwtToken);
+        return tokenResponseDto;
     }
 
     @Transactional
@@ -115,10 +108,11 @@ public class MemberService {
     }
 
     @Transactional
-    public long loginKakaoMember(String accessToken) {
+    public TokenResponseDto loginKakaoMember(String accessToken) {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
-        String id = "";
+        String email = "";
         String name = "";
+        String id = "";
         try {
             URL url = new URL(reqURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -137,31 +131,31 @@ public class MemberService {
 
             JsonObject object = (JsonObject) JsonParser.parseString(result);
             JsonObject properties = (JsonObject) object.getAsJsonObject().get("properties");
+            JsonObject kakao_account = (JsonObject) object.getAsJsonObject().get("kakao_account");
 
             name = properties.get("nickname").getAsString();
-            //email을 카카오에서 받아올 수 없으니 일단 ID로 테스트용
+            email = kakao_account.get("email").getAsString();
             id = object.get("id").getAsString();
-
         } catch(IOException e) {
             e.printStackTrace();
         }
 
-        boolean isDuplicate = memberRepository.findMemberByEmail(id).isPresent();
+        boolean isDuplicate = memberRepository.findMemberByEmail(email).isPresent();
         if(!isDuplicate) {
-            Member savedMember = Member.builder()
+            MemberInfoRequestDto memberInfoRequestDto = MemberInfoRequestDto.builder()
                     .name(name)
-                    .email(id)
-                    .password("1111")  //비밀번호 1111로 테스트용
-                    .createdDate(LocalDateTime.now())
-                    .lastLoginDate(LocalDateTime.now())
-                    .role(Role.ROLE_USER)
+                    .email(email)
+                    .password(id)
                     .build();
-            memberRepository.save(savedMember);
+            memberInfoRequestDto.encodePassword(passwordEncoder.encode(memberInfoRequestDto.getPassword()));
+            Member savedMember =
+                    memberRepository.save(memberInfoRequestDto.toSaveMember());
         } else {
             updateLastLoginDate(id);
         }
-        Member member = memberRepository.findMemberByEmail(id).orElseThrow(() -> new RuntimeException("no user"));
-        return member.getId();
+        Member member = memberRepository.findMemberByEmail(email).orElseThrow(() -> new RuntimeException("no user"));
+        JwtToken jwtToken = jwtUtil.generateToken(member.getEmail());
+        return new TokenResponseDto(member.getId(), jwtToken);
     }
 
     @Transactional

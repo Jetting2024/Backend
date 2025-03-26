@@ -25,7 +25,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
-    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp","/travel/popularLists"};
+    private final String[] ALLOW_URL = {"/", "/member/login", "/member/signUp","/travel/popularLists", "/member/kakao", "member/kakao/**"};
     private final String[] AUTHENTICATED_URL = {"/member/**","/travel/**", "/chat/**"};
 
     @Bean

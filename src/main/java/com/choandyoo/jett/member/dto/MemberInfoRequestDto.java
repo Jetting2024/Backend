@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import com.choandyoo.jett.member.entity.Member;
 import com.choandyoo.jett.member.enums.Role;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
 @Getter
 @Data
+@Builder
 public class MemberInfoRequestDto {
     private String name;
     private String email;
