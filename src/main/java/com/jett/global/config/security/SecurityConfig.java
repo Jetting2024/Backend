@@ -1,6 +1,5 @@
 package com.jett.global.config.security;
 
-import com.choandyoo.jett.jwt.*;
 import com.jett.global.config.jwt.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

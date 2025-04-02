@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class KakaoService {
+public class KakaoMapService {
 
     private final KakaoOAuth2Config kakaoOAuth2Config;
 

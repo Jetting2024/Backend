@@ -6,7 +6,7 @@ import com.jett.domain.travel.dto.response.PopularPlaceResponse;
 import com.jett.domain.travel.dto.response.TravelResponse;
 import com.jett.global.common.CustomApiResponse;
 import com.jett.global.config.security.CustomUserDetails;
-import com.jett.domain.travel.kakao.KakaoService;
+import com.jett.domain.travel.kakao.KakaoMapService;
 import com.jett.domain.travel.opendata.TourApiService;
 import com.jett.domain.travel.service.TravelServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class TravelController {
 
-  private final KakaoService kakaoService;
+  private final KakaoMapService kakaoMapService;
   private final TravelServiceImpl travelServiceImpl;
   private final TourApiService tourApiService;
 
@@ -41,7 +41,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<String>> searchKeyword(
       @RequestParam("query") String query,
       @RequestParam(value = "page", defaultValue = "1") String page) {
-    String searchResult = kakaoService.searchKeyword(query, page);
+    String searchResult = kakaoMapService.searchKeyword(query, page);
     return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(searchResult));
   }
 

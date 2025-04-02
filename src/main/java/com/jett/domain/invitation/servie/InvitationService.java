@@ -1,6 +1,6 @@
 package com.jett.domain.invitation.servie;
 
-import com.jett.domain.chat.service.ChatService;
+import com.jett.domain.chat.service.ChatServiceImpl;
 import com.jett.domain.invitation.component.RedisService;
 import com.jett.domain.invitation.dto.InviteClickDto;
 import com.jett.domain.invitation.dto.InviteStatusDto;
@@ -22,7 +22,7 @@ public class InvitationService {
     private final RedisService redisService;
     private final TravelRepository travelRepository;
     private final TravelServiceImpl travelServiceImpl;
-    private final ChatService chatService;
+    private final ChatServiceImpl chatServiceImpl;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -58,6 +58,6 @@ public class InvitationService {
                 .email(member.getEmail())
                 .build();
         travelServiceImpl.inviteTravel(travelInviteRequest, travelId);
-        chatService.addChatroomMember(member.getId(), travelId);
+        chatServiceImpl.addChatroomMember(member.getId(), travelId);
     }
 }

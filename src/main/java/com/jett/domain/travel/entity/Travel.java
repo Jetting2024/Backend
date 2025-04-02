@@ -43,6 +43,7 @@ public class Travel {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted", nullable = false)
+
     private Boolean isDeleted = false;
 
     @OneToMany(mappedBy = "travel")
