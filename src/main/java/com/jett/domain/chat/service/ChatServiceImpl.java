@@ -70,5 +70,13 @@ public class ChatServiceImpl implements ChatService{
                 .build();
         return chatRoomInfoDto;
     }
+    
+    @Transactional
+    public List<ChatMessageDto> getMessages(Long roomId) {
+        return chatMessageRepository.findAllByRoomId(roomId)
+                .stream()
+                .map(ChatMessageDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
 }
