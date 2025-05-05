@@ -4,11 +4,11 @@ import com.jett.domain.travel.dto.request.TravelInviteRequest;
 import com.jett.domain.travel.dto.request.TravelRequest;
 import com.jett.domain.travel.dto.response.PopularPlaceResponse;
 import com.jett.domain.travel.dto.response.TravelResponse;
+import com.jett.domain.travel.service.TravelService;
 import com.jett.global.common.CustomApiResponse;
 import com.jett.global.config.security.CustomUserDetails;
 import com.jett.domain.travel.kakao.KakaoMapService;
 import com.jett.domain.travel.opendata.TourApiService;
-import com.jett.domain.travel.service.TravelServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TravelController {
 
   private final KakaoMapService kakaoMapService;
-  private final TravelServiceImpl travelServiceImpl;
+  private final TravelService travelService;
   private final TourApiService tourApiService;
 
   @Operation(summary = "장소 검색", description = "키워드를 통해 장소 검색하기")
@@ -50,7 +50,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<Long>> addTravel(@RequestBody TravelRequest travelRequest,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     Long userId = customUserDetails.getId();
-    Long travelId = travelServiceImpl.addTravel(userId, travelRequest);
+    Long travelId = travelService.addTravel(userId, travelRequest);
     return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(travelId));
   }
 
@@ -58,7 +58,7 @@ public class TravelController {
   @PostMapping("/invite/{travelId}")
   public ResponseEntity<CustomApiResponse<String>> inviteTravel(
       @RequestBody TravelInviteRequest travelInviteRequest, @PathVariable Long travelId) {
-    travelServiceImpl.inviteTravel(travelInviteRequest, travelId);
+    travelService.inviteTravel(travelInviteRequest, travelId);
     return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("친구 초대됌"));
   }
 
@@ -67,7 +67,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule(
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     Long userId = customUserDetails.getId();
-    List<TravelResponse> checkTravelResult = travelServiceImpl.getAllTravel(userId);
+    List<TravelResponse> checkTravelResult = travelService.getAllTravel(userId);
     return ResponseEntity.status(HttpStatus.OK)
         .body(CustomApiResponse.onSuccess(checkTravelResult));
   }
@@ -77,7 +77,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<TravelResponse>> checkOnlyTravelSchedule(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId) {
     Long userId = customUserDetails.getId();
-    TravelResponse checkTravelResult = travelServiceImpl.checkOnlyTravelSchedule(userId,travelId);
+    TravelResponse checkTravelResult = travelService.checkOnlyTravelSchedule(userId,travelId);
     return ResponseEntity.status(HttpStatus.OK)
         .body(CustomApiResponse.onSuccess(checkTravelResult));
   }
@@ -87,7 +87,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<String>> deleteTravel(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId) {
     Long userId = customUserDetails.getId();
-    travelServiceImpl.deleteTravel(userId, travelId);
+    travelService.deleteTravel(userId, travelId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess("여행 삭제됌"));
 
   }

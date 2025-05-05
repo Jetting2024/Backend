@@ -1,5 +1,6 @@
 package com.jett.domain.schedule.controller;
 
+import com.jett.domain.schedule.service.ScheduleService;
 import com.jett.global.common.CustomApiResponse;
 import com.jett.global.config.security.CustomUserDetails;
 import com.jett.domain.schedule.dto.ScheduleRequest;
@@ -21,12 +22,12 @@ import java.util.List;
 @AllArgsConstructor
 
 public class ScheduleController {
-    private final ScheduleServiceImpl scheduleServiceImpl;
+    private final ScheduleService scheduleService;
     @Operation(summary = "여행 일정 추가", description = "여행 일정 추가")
     @PostMapping("/{travelId}/add")
     public ResponseEntity<CustomApiResponse<List<Long>>> addSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId , @RequestBody List<ScheduleRequest> scheduleRequests) {
         Long userId=customUserDetails.getId();
-        List<Long> scheduleId= scheduleServiceImpl.addSchedule(userId,travelId, scheduleRequests);
+        List<Long> scheduleId= scheduleService.addSchedule(userId,travelId, scheduleRequests);
         return ResponseEntity.status(HttpStatus.CREATED).body(CustomApiResponse.onSuccess(scheduleId));
     }
 
@@ -34,7 +35,7 @@ public class ScheduleController {
     @Operation(summary = "일정 조회", description = "선택 여행 일정 조회")
     @GetMapping("/lists/{travelId}")
     public ResponseEntity<CustomApiResponse<List<ScheduleResponse>>> getSchedule(@PathVariable Long travelId) {
-        List<ScheduleResponse> scheduleResponses = scheduleServiceImpl.getAllSchedule(travelId);
+        List<ScheduleResponse> scheduleResponses = scheduleService.getAllSchedule(travelId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(scheduleResponses));
 
     }
@@ -42,7 +43,7 @@ public class ScheduleController {
     @DeleteMapping("/{travelId}/{scheduleId}")
     public ResponseEntity<CustomApiResponse<String>> deleteSchedule(@AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long travelId,@PathVariable Long scheduleId) {
         Long userId=customUserDetails.getId();
-        scheduleServiceImpl.deleteSchedule(userId,travelId,scheduleId);
+        scheduleService.deleteSchedule(userId,travelId,scheduleId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess("일정 삭제됌"));
     }
 
