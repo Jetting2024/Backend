@@ -26,22 +26,35 @@ public class TravelServiceImpl implements TravelService {
     private final MemberRepository memberRepository;
     private final TravelMemberRepository travelMemberRepository;
 
+
     @Override
     @Transactional
     public List<TravelResponse> getAllTravel(Long userId) {
+        long startTime = System.nanoTime();
+
         List<Travel> travels = travelRepository.findByTravelMembers_Member_Id(userId);
-        return travels.stream()
-                .map(travel -> TravelResponse.builder()
-                        .travelId(travel.getTravelId())
-                        .travelName(travel.getTravelName())
-                        .startDate(travel.getStartDate())
-                        .endDate(travel.getEndDate())
-                        .participants(travel.getTravelMembers().stream()
-                                .map(travelMember -> travelMember.getMember().getName())  // TravelMember를 통해 참여자 이름 추출
-                                .collect(Collectors.toList()))
-                        .build())
-                .collect(Collectors.toList());
+
+        //List<Travel> travels = travelRepository.findAllByUserIdWithMembers(userId);
+
+        List<TravelResponse> travelResponses = travels.stream()
+            .map(travel -> TravelResponse.builder()
+                .travelId(travel.getTravelId())
+                .travelName(travel.getTravelName())
+                .startDate(travel.getStartDate())
+                .endDate(travel.getEndDate())
+                .participants(travel.getTravelMembers().stream()
+                    .map(travelMember -> travelMember.getMember().getName())
+                    .collect(Collectors.toList()))
+                .build())
+            .collect(Collectors.toList());
+
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+        System.out.println("getAllTravel 메서드 실행 시간: " + duration + " 나노초");
+
+        return travelResponses;
     }
+
     @Override
     @Transactional
     public Long addTravel(Long userId, TravelRequest travelRequest) {

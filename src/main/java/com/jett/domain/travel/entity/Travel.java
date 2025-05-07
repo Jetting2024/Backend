@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -46,6 +47,7 @@ public class Travel {
 
     private Boolean isDeleted = false;
 
-    @OneToMany(mappedBy = "travel")
+    @OneToMany(mappedBy = "travel", fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
     private List<TravelMember> travelMembers;
 }
