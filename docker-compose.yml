@@ -46,7 +46,12 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-    command: ["redis-server", "--appendonly", "yes"]
+    command: [
+      "redis-server",
+      "--maxmemory", "1mb",
+      "--maxmemory-policy", "allkeys-lfu",
+      "--appendonly", "yes"
+    ]
     networks:
       - mynetwork
 
