@@ -1,18 +1,23 @@
 package com.jett.domain.travel.controller;
 
+import com.jett.domain.invitation.component.RedisService;
 import com.jett.domain.travel.dto.request.TravelInviteRequest;
 import com.jett.domain.travel.dto.request.TravelRequest;
 import com.jett.domain.travel.dto.response.PopularPlaceResponse;
 import com.jett.domain.travel.dto.response.TravelResponse;
+import com.jett.domain.travel.service.TravelService;
 import com.jett.global.common.CustomApiResponse;
 import com.jett.global.config.security.CustomUserDetails;
 import com.jett.domain.travel.kakao.KakaoMapService;
-import com.jett.domain.travel.opendata.TourApiService;
-import com.jett.domain.travel.service.TravelServiceImpl;
+import com.jett.domain.travel.opendata.service.TourApiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import lombok.AllArgsConstructor;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,12 +34,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/travel")
 @RestController
 @AllArgsConstructor
+@Slf4j
 
 public class TravelController {
 
   private final KakaoMapService kakaoMapService;
-  private final TravelServiceImpl travelServiceImpl;
+  private final TravelService travelService;
   private final TourApiService tourApiService;
+  private final RedisService redisService;
 
   @Operation(summary = "장소 검색", description = "키워드를 통해 장소 검색하기")
   @GetMapping("/kakao/searchKeyword")
@@ -50,7 +57,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<Long>> addTravel(@RequestBody TravelRequest travelRequest,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     Long userId = customUserDetails.getId();
-    Long travelId = travelServiceImpl.addTravel(userId, travelRequest);
+    Long travelId = travelService.addTravel(userId, travelRequest);
     return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(travelId));
   }
 
@@ -58,7 +65,7 @@ public class TravelController {
   @PostMapping("/invite/{travelId}")
   public ResponseEntity<CustomApiResponse<String>> inviteTravel(
       @RequestBody TravelInviteRequest travelInviteRequest, @PathVariable Long travelId) {
-    travelServiceImpl.inviteTravel(travelInviteRequest, travelId);
+    travelService.inviteTravel(travelInviteRequest, travelId);
     return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess("친구 초대됌"));
   }
 
@@ -67,7 +74,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<List<TravelResponse>>> checkTravelSchedule(
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     Long userId = customUserDetails.getId();
-    List<TravelResponse> checkTravelResult = travelServiceImpl.getAllTravel(userId);
+    List<TravelResponse> checkTravelResult = travelService.getAllTravel(userId);
     return ResponseEntity.status(HttpStatus.OK)
         .body(CustomApiResponse.onSuccess(checkTravelResult));
   }
@@ -77,7 +84,7 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<TravelResponse>> checkOnlyTravelSchedule(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId) {
     Long userId = customUserDetails.getId();
-    TravelResponse checkTravelResult = travelServiceImpl.checkOnlyTravelSchedule(userId,travelId);
+    TravelResponse checkTravelResult = travelService.checkOnlyTravelSchedule(userId,travelId);
     return ResponseEntity.status(HttpStatus.OK)
         .body(CustomApiResponse.onSuccess(checkTravelResult));
   }
@@ -87,13 +94,48 @@ public class TravelController {
   public ResponseEntity<CustomApiResponse<String>> deleteTravel(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long travelId) {
     Long userId = customUserDetails.getId();
-    travelServiceImpl.deleteTravel(userId, travelId);
+    travelService.deleteTravel(userId, travelId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CustomApiResponse.onSuccess("여행 삭제됌"));
 
   }
-
-  @Operation(summary = "지역별 인기여행지 조회", description = "지역을 입력받을 후 해당하는 위치 관광지 조회")
+  @Operation(summary = "지역별 인기여행지 조회", description = "지역을 MySQL 또는 Redis에서 조회")
   @GetMapping("/popularLists")
+  public ResponseEntity<CustomApiResponse<List<PopularPlaceResponse>>> getPopularPlaceList(
+      @RequestParam String place) {
+    Instant startTime = Instant.now();
+    String redisKey = "지역명"+ place;
+    List<PopularPlaceResponse> cachedData = redisService.getPopularPlaces(redisKey);
+    if (cachedData != null) {
+      log.info("캐시데이터 저장되어있었음");
+      Instant endTime = Instant.now();
+      long duration = java.time.Duration.between(startTime, endTime).toNanos();
+      log.info("API 호출 시간 (캐시 데이터 조회): " + duration + "ns");
+      return ResponseEntity.ok(CustomApiResponse.onSuccess(cachedData));
+    }// 레디스에 저장되어있음
+    log.info("레디스에 없었음");
+
+    // 없으면 DB
+    // DB 조회 시작 시간 기록
+    Instant dbStartTime = Instant.now();
+    List<PopularPlaceResponse> popularResults = tourApiService.getPopularPlaceList(place);
+    // DB 조회 끝나고 시간 측정
+    Instant dbEndTime = Instant.now();
+    long dbDuration = java.time.Duration.between(dbStartTime, dbEndTime).toNanos();
+    log.info("API 호출 시간 (DB 조회): " + dbDuration + "ns");
+    redisService.setPopularPlaces(redisKey, popularResults, Duration.ofMinutes(30));
+
+    // 끝 시간 기록 및 소요 시간 계산
+    Instant endTime = Instant.now();
+    long duration = java.time.Duration.between(startTime, endTime).toNanos();
+    log.info("API 호출 시간 (DB 조회 및 캐시 저장): " + duration + "ns");
+    return ResponseEntity.ok(CustomApiResponse.onSuccess(popularResults));
+  }
+
+
+
+
+  @Operation(summary = "API 요청 테스트 DB테스트 및 저장용지역별 인기여행지 조회 사용X", description = "지역을 입력받을 후 해당하는 위치 관광지 조회")
+  @GetMapping("/popularLists/Test")
   public ResponseEntity<CustomApiResponse<List<PopularPlaceResponse>>> getPopularPlace(
       @RequestParam String place) {
     try {
@@ -103,6 +145,13 @@ public class TravelController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(CustomApiResponse.onFailure(e.getMessage(), null));
     }
+  }
+  @Operation(summary = "지역별 인기여행지 MYSQL 대량 저장 사용 X", description = "모든 지역 DB 저장 API")
+  @GetMapping("/AllLists")
+  public ResponseEntity<CustomApiResponse<String>> saveAllPopularPlace() {
+    tourApiService.saveAllPopularPlace();
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(CustomApiResponse.onSuccess("Save 완료"));
   }
 
 }

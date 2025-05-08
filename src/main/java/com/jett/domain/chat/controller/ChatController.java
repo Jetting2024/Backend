@@ -3,6 +3,7 @@ package com.jett.domain.chat.controller;
 import com.jett.domain.chat.dto.ChatMessageDto;
 import com.jett.domain.chat.dto.ChatRoomDto;
 import com.jett.domain.chat.dto.ChatRoomInfoDto;
+import com.jett.domain.chat.service.ChatService;
 import com.jett.domain.chat.service.ChatServiceImpl;
 import com.jett.global.common.CustomApiResponse;
 import com.jett.global.config.security.CustomUserDetails;
@@ -21,35 +22,35 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 public class ChatController {
-    private final ChatServiceImpl chatServiceImpl;
+    private final ChatService chatService;
     private final SimpMessagingTemplate template;
 
     @Operation(summary = "채팅방 생성", description = "채팅방 생성하기")
     @PostMapping("/chat/createRoom")
     public ResponseEntity<CustomApiResponse<Long>> createChatRoom(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ChatRoomDto chatRoomDto) {
         Long userId = customUserDetails.getId();
-        long roomId = chatServiceImpl.createRoom(userId, chatRoomDto);
+        long roomId = chatService.createRoom(userId, chatRoomDto);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(roomId));
     }
 
     @Operation(summary = "메시지 전송", description = "메시지 전송하기")
     @MessageMapping("/sendMessage")
     public void sendMessage(@Payload ChatMessageDto chatMessageDto) {
-        chatServiceImpl.saveMessage(chatMessageDto);
+        chatService.saveMessage(chatMessageDto);
         template.convertAndSend("/sub/chat/room/" + chatMessageDto.getRoomId(), chatMessageDto.getMessage());
     }
 
     @Operation(summary = "채팅방 불러오기", description = "채팅방 불러오기")
     @GetMapping("/chat/info/{chatroomId}")
     public ResponseEntity<CustomApiResponse<ChatRoomInfoDto>> getChatroom(@PathVariable("chatroomId") Long chatroomId) {
-        ChatRoomInfoDto chatRoomInfoDto = chatServiceImpl.getChatroom(chatroomId);
+        ChatRoomInfoDto chatRoomInfoDto = chatService.getChatroom(chatroomId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(chatRoomInfoDto));
     }
 
     @Operation(summary = "채팅 내용 불러오기", description = "특정 채팅방에서 채팅 내용 불러오기")
     @GetMapping("/chat/{chatroomId}/getMessages")
     public ResponseEntity<CustomApiResponse<List<ChatMessageDto>>> getMessage(@PathVariable("chatroomId") Long chatroomId) {
-        List<ChatMessageDto> messages = chatServiceImpl.getMessages(chatroomId);
+        List<ChatMessageDto> messages = chatService.getMessages(chatroomId);
         return ResponseEntity.status(HttpStatus.OK).body(CustomApiResponse.onSuccess(messages));
     }
     

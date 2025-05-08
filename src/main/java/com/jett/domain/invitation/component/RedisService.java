@@ -1,6 +1,8 @@
 package com.jett.domain.invitation.component;
 
+import com.jett.domain.travel.dto.response.PopularPlaceResponse;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
@@ -64,5 +66,13 @@ public class RedisService {
         final LocalDateTime now = LocalDateTime.now();
         final LocalDateTime tomorrow = now.plusDays(1);
         return Duration.between(now, tomorrow);
+    }
+    @SuppressWarnings("unchecked")
+    public List<PopularPlaceResponse> getPopularPlaces(String key) {
+        return (List<PopularPlaceResponse>) redisTemplate.opsForValue().get(key);
+    }
+
+    public void setPopularPlaces(String key, List<PopularPlaceResponse> data, Duration ttl) {
+        redisTemplate.opsForValue().set(key, data, ttl);
     }
 }

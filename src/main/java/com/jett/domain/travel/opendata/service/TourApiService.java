@@ -1,7 +1,10 @@
-package com.jett.domain.travel.opendata;
+package com.jett.domain.travel.opendata.service;
 
 import com.jett.domain.travel.dto.response.PopularPlaceResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jett.domain.travel.opendata.entity.PopularPlace;
+import com.jett.domain.travel.opendata.repository.PopularPlaceRepository;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +28,7 @@ public class TourApiService {
 
     @Value("${api.serviceKey}")
     private String serviceKey;
+    private final PopularPlaceRepository popularPlaceRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final List<String> VALID_PLACES = Arrays.asList(
             "서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종",
@@ -36,6 +40,7 @@ public class TourApiService {
         if (!VALID_PLACES.contains(place)) {
             throw new IllegalArgumentException("해당 지역은 지원하지 않습니다: " + place);
         }
+        long startTime = System.currentTimeMillis();
         try {
             String encodedPlace = URLEncoder.encode(place, StandardCharsets.UTF_8);
             String urlString = "http://apis.data.go.kr/B551011/KorService1/searchKeyword1"
@@ -43,6 +48,7 @@ public class TourApiService {
                     + "&MobileApp=MobileApp"
                     + "&_type=json"
                     + "&keyword=" + encodedPlace
+                    + "&numOfRows=1000"
                     + "&serviceKey=" + serviceKey;
 
             log.info("최종 API 요청 URL: {}", urlString);
@@ -98,7 +104,43 @@ public class TourApiService {
         } catch (Exception e) {
             log.error("API 요청 중 오류 발생", e);
         }
+        // 시간 측정 종료
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
+        // 시간 출력 (단위: 밀리초)
+        log.info("API 요청 및 응답 처리 시간: {} ms", duration);
 
         return popularPlaces;
     }
+    public void saveAllPopularPlace() {
+        for (String place : VALID_PLACES) {
+            try {
+                List<PopularPlaceResponse> responses = getJsonResponse(place);
+                List<PopularPlace> entities = responses.stream()
+                    .map(r -> PopularPlace.builder()
+                        .region(place)
+                        .title(r.getTitle())
+                        .address(r.getAddress())
+                        .imageUrl(r.getImageUrl())
+                        .build())
+                    .toList();
+                popularPlaceRepository.saveAll(entities);
+                log.info("[{}] 저장 완료. {}개", place, entities.size());
+            } catch (Exception e) {
+                log.error("[{}] 저장 중 오류 발생", place, e);
+            }
+        }
+    }
+    public List<PopularPlaceResponse> getPopularPlaceList(String place) {
+        List<PopularPlace> entities = popularPlaceRepository.findByRegion(place);
+
+        return entities.stream()
+            .map(entity -> new PopularPlaceResponse(
+                entity.getTitle(),
+                entity.getAddress(),
+                entity.getImageUrl()))
+            .collect(Collectors.toList());
+    }
+
 }

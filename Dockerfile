@@ -4,6 +4,7 @@ FROM bellsoft/liberica-openjdk-alpine:17
 # FROM openjdk:11-jdk-alpine
 
 CMD ["./gradlew", "clean", "build"]
+
 # or Maven 
 # CMD ["./mvnw", "clean", "package"]
 
