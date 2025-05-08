@@ -24,7 +24,7 @@ public class InvitationController {
     @PostMapping("/invite/{travelId}/invitation")
     public ResponseEntity<CustomApiResponse<String>> generateInvitation(@PathVariable("travelId") Long travelId) {
         String invitation = invitationService.generateInvitation(travelId);
-        String inviteUrl = "http://localhost:3000/invite/" + travelId + "/" + invitation;
+        String inviteUrl = "https://www.jetttravel.shop/invite/" + travelId + "/" + invitation;
         System.out.println(inviteUrl);
         return ResponseEntity.status(HttpStatus.CREATED).body(CustomApiResponse.onSuccess(inviteUrl));
     }
